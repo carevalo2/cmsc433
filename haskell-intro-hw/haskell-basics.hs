@@ -392,3 +392,69 @@ Suggested workflow for every exercise:
   4. Implement the smallest case first.
   5. Reload and test normal cases plus empty, zero, or negative inputs.
 -}
+
+triple :: Int -> Int 
+triple x = x * 3
+
+isLong :: String -> Bool 
+isLong s = length s > 5
+
+gradeLetter :: Int -> Char
+gradeLetter l 
+   | l >= 90 = 'A'
+   | l >= 80 = 'B' 
+   | l >= 70 = 'C'
+   | l >= 60 = 'D'
+   | otherwise = 'F'
+
+productList :: [Int] -> Int
+productList [] = 1
+productList (x : xs) = x * productList xs 
+
+contains :: Eq a => a -> [a] -> Bool
+contains v [] = False 
+contains v (x : xs) = 
+   if v == x then True 
+   else contains v xs 
+
+lastMaybe :: [a] -> Maybe a 
+lastMaybe [] = Nothing 
+lastMaybe [x] = Just x 
+lastMaybe (x : xs) = lastMaybe xs 
+
+keepPositive :: [Int] -> [Int]
+keepPositive l = filter (\x -> x > 0) l
+
+addOneToAllRecursive :: [Int] -> [Int]
+addOneToAllRecursive [] = []
+addOneToAllRecursive (x : xs) = x + 1 : addOneToAllRecursive xs 
+
+addOneToAllMap :: [Int] -> [Int] 
+addOneToAllMap l = map (\x -> x + 1) l
+
+count :: (a -> Bool) -> [a] -> Int 
+count p l =  foldr (\x countSoFar ->
+   if p x 
+      then countSoFar + 1 
+      else countSoFar
+   ) 0 l
+
+safeDivide :: Double -> Double -> Maybe Double 
+safeDivide _ 0 = Nothing 
+safeDivide a b = Just (a / b)
+
+data Shape 
+   = Circle Double 
+   | Rectangle Double Double
+
+area :: Shape -> Double 
+area (Circle radius) = pi * radius * radius 
+area (Rectangle width height) = width * height
+
+myMap :: (a -> b) -> [a] -> [b]
+myMap m l = foldr (\x mapped -> m x : mapped) [] l
+
+flatten :: [[a]] -> [a]
+flatten [] = []
+flatten ([] : rest) = flatten rest
+flatten ((x : xs) : rest) = x : flatten (xs : rest)

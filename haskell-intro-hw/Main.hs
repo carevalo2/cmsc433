@@ -91,8 +91,9 @@ where) can and should be renamed.
 -- Part One
 
 abc x y z =
-  if x then if y then True else
-       if (x && z) then True else False
+  if x then 
+    if y then True 
+    else if (x && z) then True else False
   else False
 
 tabc :: Test
