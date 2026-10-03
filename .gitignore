@@ -5,3 +5,5 @@
 *.pdb
 *.deps.json
 *.runtimeconfig.json
+.stack-work/
+.vscode
