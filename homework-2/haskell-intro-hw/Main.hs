@@ -89,11 +89,8 @@ where) can and should be renamed.
 -}
 
 -- Part One
-
-abc x y z =
-  if x then if y then True else
-       if (x && z) then True else False
-  else False
+abc :: Bool -> Bool -> Bool -> Bool
+abc x y z = x && (y || z)
 
 tabc :: Test
 tabc = "abc" ~: TestList [abc True False True  ~?= True,
@@ -102,18 +99,9 @@ tabc = "abc" ~: TestList [abc True False True  ~?= True,
 
 -- Part Two
 
-arithmetic :: ((Int, Int), Int) -> ((Int,Int), Int) -> (Int, Int, Int)
-arithmetic x1 x2 =
-     let a = fst (fst x1) in
-     let b = snd (fst x1) in
-     let c = snd x1 in
-     let d = fst (fst x2) in
-     let e = snd (fst x2) in
-     let f = snd x2
-       in
-       ((((((b*f) - (c*e)), ((c*
-       d) - (a*f)
-       ), ((a*e)-(b*d))))))
+arithmetic :: ((Int, Int), Int) -> ((Int, Int), Int) -> (Int, Int, Int)
+arithmetic ((a, b), c) ((d, e), f) =
+      (b * f - c * e, c * d - a * f, a * e - b * d)
 
 tarithmetic :: Test
 tarithmetic = "arithmetic" ~:
@@ -122,10 +110,10 @@ tarithmetic = "arithmetic" ~:
 
 -- Part Three
 
-reverse l  = reverseAux l [] where
-  reverseAux l acc =
-    if null l then acc
-       else reverseAux (tail l) (head l : acc)
+reverse :: [a] -> [a]
+reverse xs = reverseAux xs [] where
+  reverseAux [] acc = acc
+  reverseAux (x : xs) acc = reverseAux xs (x : acc)
 
 treverse :: Test
 treverse = "reverse" ~: TestList
@@ -134,9 +122,10 @@ treverse = "reverse" ~: TestList
 
 -- Part Four
 
-zip xs ys = g 0 xs ys where
-  g n xs ys = if n == length xs || n == length ys then [] else
-          (xs !! n, ys !! n) : g (n + 1) xs ys
+zip :: [a] -> [b] -> [(a, b)]
+zip [] _ = []
+zip _ [] = []
+zip (x : xs) (y : ys) = (x, y) : zip xs ys
 
 tzip :: Test
 tzip = "zip" ~:
@@ -187,11 +176,23 @@ testLists = "testLists" ~: TestList
 -- >>> minumumMaybe [2,1,3]
 -- Just 1 
 minimumMaybe :: [Int] -> Maybe Int
-minimumMaybe = undefined
+minimumMaybe [] = Nothing 
+minimumMaybe (x : xs) = helper x xs 
+  where 
+    helper x [] = Just x 
+    helper x (y : ys) = 
+      if y < x then helper y ys
+      else helper x ys
 
 tminimumMaybe :: Test
 tminimumMaybe =
-   "minimumMaybe" ~: (assertFailure "testcases for minimumMaybe" :: Assertion)
+  "minimumMaybe" ~: 
+    TestList[ 
+      minimumMaybe [] ~?= Nothing,
+      minimumMaybe [2, 1, 3] ~?= Just 1,
+      minimumMaybe [1] ~?= Just 1,
+      minimumMaybe [-1, -2, -3, 4] ~?= Just (-3)
+    ]
 
 -- Part Two
 
@@ -204,10 +205,23 @@ tminimumMaybe =
 -- >>> "Hello" `startsWith` "Wello Horld!"
 -- False
 startsWith :: String -> String -> Bool
-startsWith = undefined
+startsWith [] _ = True
+startsWith _ [] = False
+startsWith (c : cs) (d : ds) = c == d && startsWith cs ds 
 
 tstartsWith :: Test
-tstartsWith = "startsWith" ~: (assertFailure "testcase for startsWith" :: Assertion)
+tstartsWith = "startsWith" ~: 
+  TestList [
+    startsWith "Hello" "Hello World!" ~?= True,
+    startsWith "A" "A" ~?= True,
+    startsWith "" "" ~?= True,
+    startsWith " " " " ~?= True,
+    startsWith "" "Anything" ~?= True,
+    startsWith "Hello" "Wello Horld!" ~?= False,
+    startsWith "a" "" ~?= False,
+    startsWith "  " " " ~?= False,
+    startsWith "aaa" "aa" ~?= False
+  ]
 
 -- Part Three
 
@@ -222,10 +236,29 @@ tstartsWith = "startsWith" ~: (assertFailure "testcase for startsWith" :: Assert
 -- False
 
 endsWith :: String -> String -> Bool
-endsWith = undefined
+endsWith [] _ = True
+endsWith _ [] = False
+endsWith cs (d : ds) = equal cs (d : ds) || endsWith cs ds
+  where
+    equal [] [] = True
+    equal [] _ = False
+    equal _ [] = False
+    equal (c : cs) (d : ds) = c == d && equal cs ds
 
 tendsWith :: Test
-tendsWith = "endsWith" ~: (assertFailure "testcase for endsWith" :: Assertion)
+tendsWith = "endsWith" ~: 
+  TestList[
+    endsWith "" "" ~?= True,
+    endsWith "ld!" "Hello World!" ~?= True,
+    endsWith "" "Nonempty" ~?= True,
+    endsWith "same" "same" ~?= True,
+    endsWith " " " " ~?= True,
+    endsWith "a" "aaa" ~?= True,
+    endsWith "aa" "a" ~?= False,
+    endsWith "World" "Hello World!" ~?= False,
+    endsWith "Nonempty" "" ~?= False,
+    endsWith "  " " " ~?= False
+  ]
 
 -- Part Four
 
@@ -262,9 +295,32 @@ ttranspose = "transpose" ~: (assertFailure "testcase for transpose" :: Assertion
 -- 5
 
 countSub :: String -> String -> Int
-countSub = undefined
+countSub [] ds = counter 1 ds  
+  where 
+    counter n [] = n 
+    counter n (_ : xs) = counter (n + 1) xs
+countSub cs [] = 0
+countSub cs (d : ds) = 
+  if isSubstring cs (d : ds) then 1 + countSub cs ds
+  else countSub cs ds
+  where
+    isSubstring [] _ = True
+    isSubstring _ [] = False
+    isSubstring (x : xs) (y : ys) = x == y && isSubstring xs ys 
+
+
 tcountSub :: Test
-tcountSub = "countSub" ~: (assertFailure "testcase for countSub" :: Assertion)
+tcountSub = "countSub" ~: 
+  TestList[
+    countSub "aa" "aaa" ~?= 2,
+    countSub "" "aaac" ~?= 5,
+    countSub "" "" ~?= 1,
+    countSub "" "   " ~?= 4,
+    countSub "aaa" "a" ~?= 0,
+    countSub "a" "aaaa" ~?= 4,
+    countSub "aaa" "aaa" ~?= 1,
+    countSub "nonempty" "" ~?= 0
+  ]
 
 --------------------------------------------------------------------------------
 -- Problem (Higher-order list operations)
@@ -294,7 +350,15 @@ testHO = TestList [ttakeWhile, tfind, tall, tmap2, tmapMaybe]
 -- []
 
 takeWhile :: (a -> Bool) -> [a] -> [a]
-takeWhile = undefined
+takeWhile p xs = 
+  foldr (\x (longest, curr) ->
+    if p x then
+      if curr + 1 > longest then (curr + 1, curr + 1)
+      else (longest, curr + 1)
+    else (longest, 0)
+  ) (0, 0) xs 
+
+
 ttakeWhile :: Test
 ttakeWhile = "takeWhile" ~: (assertFailure "testcase for takeWhile" :: Assertion)
 
