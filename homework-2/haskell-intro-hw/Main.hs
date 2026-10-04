@@ -351,16 +351,20 @@ testHO = TestList [ttakeWhile, tfind, tall, tmap2, tmapMaybe]
 
 takeWhile :: (a -> Bool) -> [a] -> [a]
 takeWhile p xs = 
-  foldr (\x (longest, curr) ->
-    if p x then
-      if curr + 1 > longest then (curr + 1, curr + 1)
-      else (longest, curr + 1)
-    else (longest, 0)
-  ) (0, 0) xs 
+  foldr (\x acc ->
+    if p x then x : acc else []
+  ) [] xs 
 
 
 ttakeWhile :: Test
-ttakeWhile = "takeWhile" ~: (assertFailure "testcase for takeWhile" :: Assertion)
+ttakeWhile = "takeWhile" ~: 
+  TestList[
+    takeWhile (< 3) [1,2,3,4,1,2,3,4] ~?= [1,2],
+    takeWhile (< 9) [1, 2, 3] ~?= [1, 2, 3],
+    takeWhile (< 0) [1,2,3] ~?= [],
+    takeWhile (< 1) [] ~?= [],
+    takeWhile (< 1) [9, 8, 7, 6, -1, -2, -3] ~?= []
+  ]
 
 -- | `find pred lst` returns the first element of the list that
 -- satisfies the predicate. Because no element may do so, the
@@ -370,9 +374,19 @@ ttakeWhile = "takeWhile" ~: (assertFailure "testcase for takeWhile" :: Assertion
 -- Just 3
 
 find :: (a -> Bool) -> [a] -> Maybe a
-find = undefined
+find p xs = foldr (\x acc -> if p x then Just x else acc) Nothing xs
+
+
+
 tfind :: Test
-tfind = "find" ~: (assertFailure "testcase for find" :: Assertion)
+tfind = "find" ~:
+  TestList[
+    find odd [0,2,3,4] ~?= Just 3,
+    find odd [3, 5, 7] ~?= Just 3,
+    find odd [] ~?= Nothing,
+    find odd [2,4] ~?= Nothing
+  ]
+
 
 -- | `all pred lst` returns `False` if any element of `lst`
 -- fails to satisfy `pred` and `True` otherwise.
@@ -380,10 +394,18 @@ tfind = "find" ~: (assertFailure "testcase for find" :: Assertion)
 -- >>> all odd [1,2,3]
 -- False
 
-all  :: (a -> Bool) -> [a] -> Bool
-all = undefined
+all :: (a -> Bool) -> [a] -> Bool
+all p xs = foldr (\x acc -> if p x then acc else False) True xs
+
+
 tall :: Test
-tall = "all" ~: (assertFailure "testcase for all" :: Assertion)
+tall = "all" ~: 
+  TestList[
+    all even [2,4,6] ~?= True,
+    all even [] ~?= True,
+    all even [3,5,7] ~?= False,
+    all even [2, 4, 6, 9] ~?= False
+  ]
 
 -- | `map2 f xs ys` returns the list obtained by applying `f` to
 -- to each pair of corresponding elements of `xs` and `ys`. If
@@ -399,10 +421,20 @@ tall = "all" ~: (assertFailure "testcase for all" :: Assertion)
 -- NOTE: `map2` is called `zipWith` in the Prelude
 
 map2 :: (a -> b -> c) -> [a] -> [b] -> [c]
-map2 = undefined
+map2 _ [] _  = []
+map2 _ _ [] = []
+map2 f (x : xs) (y : ys) = f x y : map2 f xs ys 
 
 tmap2 :: Test
-tmap2 = "map2" ~: (assertFailure "testcase for map2" :: Assertion)
+tmap2 = "map2" ~:
+  TestList[
+    map2 (+) [1, 2] [1, 2, 3] ~?= [2, 4],
+    map2 (+) [1,2] [3,4] ~?= [4, 6],
+    map2 (+) [1] [1, 2, 3, 4] ~?= [2],
+    map2 (+) [] [1, 2, 3] ~?= [],
+    map2 (+) [1, 2, 3] [] ~?= [],
+    map2 (+) [] [] ~?= []
+  ]
 
 -- | Apply a partial function to all the elements of the list,
 -- keeping only valid outputs.
@@ -412,10 +444,19 @@ tmap2 = "map2" ~: (assertFailure "testcase for map2" :: Assertion)
 --
 -- (where `root` is defined below.)
 mapMaybe :: (a -> Maybe b) -> [a] -> [b]
-mapMaybe = undefined
+mapMaybe _ [] = []
+mapMaybe f (x : xs) = 
+  case f x of 
+    Nothing -> mapMaybe f xs
+    Just y -> y : mapMaybe f xs
 
 tmapMaybe :: Test
-tmapMaybe = "mapMaybe" ~: (assertFailure "testcase for mapMaybe" :: Assertion)
+tmapMaybe = "mapMaybe" ~: 
+  TestList[
+    mapMaybe root [0.0, -1.0, 4.0] ~?= [0.0, 2.0],
+    mapMaybe root [] ~?= [],
+    mapMaybe root [-1, -2] ~?= []
+  ]
 
 root :: Double -> Maybe Double
 root d = if d < 0.0 then Nothing else Just $ sqrt d
@@ -453,10 +494,21 @@ function. Instead, define it yourself.
 -}
 
 concat' :: [[a]] -> [a]
-concat' = undefined
+concat' xs = 
+  foldr (\x acc -> 
+    foldr(\y innerAcc -> y : innerAcc) acc x 
+  ) [] xs
 
 tconcat' :: Test
-tconcat' = "concat" ~: (assertFailure "testcase for concat" :: Assertion)
+tconcat' = "concat" ~: 
+  TestList[
+    concat' [[1,2,3],[4,5,6],[7,8,9]] ~?= [1,2,3,4,5,6,7,8,9],
+    concat' [[1], [1]] ~?= [1, 1],
+    concat' [[], [1]] ~?= [1],
+    concat' [[1], []] ~?= [1],
+    concat' [] ~?= ([] :: [Int]),
+    concat' [[], []] ~?= ([] :: [Int])
+  ]
 
 -- | The 'startsWith' function takes two strings and returns 'True'
 -- iff the first is a prefix of the second.
@@ -470,8 +522,23 @@ tconcat' = "concat" ~: (assertFailure "testcase for concat" :: Assertion)
 -- NOTE: use foldr for this one, but it is tricky! (Hint: the value returned by foldr can itself be a function.)
 
 startsWith' :: String -> String -> Bool
-startsWith' = undefined
-tstartsWith' = "tstartsWith'" ~: (assertFailure "testcase for startsWith'" :: Assertion)
+startsWith' as bs = 
+  (foldr (\x acc ->
+    \text ->
+      case text of 
+        [] -> False
+        (c : cs) -> c == x && acc cs 
+  ) (\_ -> True) as) bs
+
+tstartsWith' :: Test
+tstartsWith' = "tstartsWith'" ~: 
+  TestList[
+    startsWith' "Hello" "Hello World!" ~?= True,
+    startsWith' "" "Nonempty" ~?= True,
+    startsWith' "" "" ~?= True,
+    startsWith "Nonempty" "" ~?= False,
+    startsWith' "Hello" "Wello Horld!" ~?= False
+  ]
 
 -- INTERLUDE: para
 
