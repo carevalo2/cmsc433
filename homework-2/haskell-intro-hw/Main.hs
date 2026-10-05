@@ -509,7 +509,7 @@ function. Instead, define it yourself.
 concat' :: [[a]] -> [a]
 concat' xs = 
   foldr (\x acc -> 
-    foldr(\y innerAcc -> y : innerAcc) acc x 
+    foldr (\y innerAcc -> y : innerAcc) acc x 
   ) [] xs
 
 tconcat' :: Test
@@ -715,7 +715,7 @@ tappendTree = "appendTree" ~:
 -- Branch (True,"a") Empty Empty
 
 invertTree :: Tree (a,b) -> Tree (b,a)
-invertTree t = mapTree(\(x, y) -> (y, x)) t
+invertTree t = mapTree (\(x, y) -> (y, x)) t
 
 tinvertTree :: Test
 tinvertTree = "invertTree" ~:
