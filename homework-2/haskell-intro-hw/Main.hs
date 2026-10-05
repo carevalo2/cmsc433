@@ -279,10 +279,23 @@ tendsWith = "endsWith" ~:
 -- [[1,3],[2,4]]
 -- (WARNING: this one is tricky!)
 transpose :: [[a]] -> [[a]]
-transpose = undefined
+transpose [] = []
+transpose [row] = helper row 
+  where 
+    helper [] = [] 
+    helper (x : xs) = [x] : helper xs
+transpose (row : rows) = map2 (:) row (transpose rows)
 
 ttranspose :: Test
-ttranspose = "transpose" ~: (assertFailure "testcase for transpose" :: Assertion)
+ttranspose = "transpose" ~: 
+  TestList[
+    transpose [[1, 2, 3],[4, 5, 6]] ~?= [[1, 4],[2, 5],[3, 6]],
+    transpose ([] :: [[Int]]) ~?= [],
+    transpose ([[]] :: [[Int]]) ~?= [],
+    transpose [[3]] ~?= [[3]], 
+    transpose [[3, 4, 5]] ~?= [[3], [4], [5]],
+    transpose [[1, 2], [3, 4, 5]] ~?= [[1, 3], [2, 4]]
+  ]
 
 -- Part Five
 
@@ -395,7 +408,7 @@ tfind = "find" ~:
 -- False
 
 all :: (a -> Bool) -> [a] -> Bool
-all p xs = foldr (\x acc -> if p x then acc else False) True xs
+all p xs = foldr (\x acc -> p x && acc) True xs
 
 
 tall :: Test
@@ -522,13 +535,13 @@ tconcat' = "concat" ~:
 -- NOTE: use foldr for this one, but it is tricky! (Hint: the value returned by foldr can itself be a function.)
 
 startsWith' :: String -> String -> Bool
-startsWith' as bs = 
+startsWith' xs ys = 
   (foldr (\x acc ->
     \text ->
       case text of 
         [] -> False
         (c : cs) -> c == x && acc cs 
-  ) (\_ -> True) as) bs
+  ) (\_ -> True) xs) ys
 
 tstartsWith' :: Test
 tstartsWith' = "tstartsWith'" ~: 
@@ -536,7 +549,7 @@ tstartsWith' = "tstartsWith'" ~:
     startsWith' "Hello" "Hello World!" ~?= True,
     startsWith' "" "Nonempty" ~?= True,
     startsWith' "" "" ~?= True,
-    startsWith "Nonempty" "" ~?= False,
+    startsWith' "Nonempty" "" ~?= False,
     startsWith' "Hello" "Wello Horld!" ~?= False
   ]
 
@@ -576,7 +589,8 @@ redefine the function above so that the test cases still pass.
 
 -}
 
-tails' = undefined
+tails' :: [a] -> [[a]]
+tails' xs = para (\y ys rest -> (y : ys) : rest) [[]] xs 
 
 ttails :: Test
 ttails = "tails" ~: TestList [
@@ -597,10 +611,17 @@ ttails = "tails" ~: TestList [
 -- NOTE: use para for this one!
 
 endsWith' :: String -> String -> Bool
-endsWith' = undefined
+endsWith' xs ys = para (\z zs rest -> xs == (z : zs) || rest) (xs == []) ys
 
 tendsWith' :: Test
-tendsWith' = "endsWith'" ~: (assertFailure "testcase for endsWith'" :: Assertion)
+tendsWith' = "endsWith'" ~: 
+  TestList[
+    endsWith' "abc" "abc" ~?= True,
+    endsWith' "bc" "abc" ~?= True,
+    endsWith' "" "nonempty" ~?= True,
+    endsWith' "nonempty" "" ~?= False,
+    endsWith' "xbc" "abc" ~?= False
+  ]
 
 -- | The 'countSub' function returns the number of (potentially overlapping)
 -- occurrences of a substring sub found in a string.
@@ -612,9 +633,22 @@ tendsWith' = "endsWith'" ~: (assertFailure "testcase for endsWith'" :: Assertion
 
 -- (You may use the para and startsWith' functions in countSub'.)
 
-countSub'  :: String -> String -> Int
-countSub' = undefined
-tcountSub' = "countSub'" ~: (assertFailure "testcase for countSub'" :: Assertion)
+countSub' :: String -> String -> Int
+countSub' xs ys = 
+  para (\z zs rest -> 
+    if startsWith' xs (z : zs) then 1 + rest
+    else rest
+  ) (if xs == [] then 1 else 0) ys
+
+tcountSub' :: Test
+tcountSub' = "countSub'" ~: 
+  TestList[
+    countSub' "aa" "aaa" ~?= 2,
+    countSub' "aa" "aa" ~?= 1,
+    countSub' "" "aaac" ~?= 5,
+    countSub' "" "" ~?= 1,
+    countSub' "a" "" ~?= 0
+  ]
 
 --------------------------------------------------------------------------------
 -- Problem (Tree Processing)
@@ -661,9 +695,18 @@ foldTree f e (Branch a n1 n2) = f a (foldTree f e n1) (foldTree f e n2)
 -- Branch 'a' Empty Empty
 
 appendTree :: Tree a -> Tree a -> Tree a
-appendTree = undefined
+appendTree t1 t2 = foldTree (\v left right -> Branch v left right) t2 t1
+
 tappendTree :: Test
-tappendTree = "appendTree" ~: (assertFailure "testcase for appendTree"  :: Assertion)
+tappendTree = "appendTree" ~:
+  TestList[
+    appendTree Empty (Branch 'a' Empty Empty) ~?= Branch 'a' Empty Empty,
+    appendTree (Empty :: Tree Char) Empty ~?= Empty,
+    appendTree (Branch 'a' Empty Empty) Empty ~?= Branch 'a' Empty Empty,
+    appendTree 
+    (Branch 1 Empty Empty) (Branch 2 Empty Empty)
+     ~?= Branch 1 (Branch 2 Empty Empty) (Branch 2 Empty Empty)
+  ]
 
 -- The `invertTree` function takes a tree of pairs and returns a new tree
 -- with each pair reversed.  For example:
@@ -672,9 +715,22 @@ tappendTree = "appendTree" ~: (assertFailure "testcase for appendTree"  :: Asser
 -- Branch (True,"a") Empty Empty
 
 invertTree :: Tree (a,b) -> Tree (b,a)
-invertTree = undefined
+invertTree t = mapTree(\(x, y) -> (y, x)) t
+
 tinvertTree :: Test
-tinvertTree = "invertTree" ~: (assertFailure "testcase for invertTree" :: Assertion)
+tinvertTree = "invertTree" ~:
+  TestList[
+    invertTree (Branch ("a", True) Empty Empty) ~?= Branch (True,"a") Empty Empty,
+    invertTree (Empty :: Tree (Char, Int)) ~?= Empty,
+    invertTree (
+      Branch ('a', 1) 
+        (Branch ('b', 2) Empty Empty)
+        (Branch ('c', 3) Empty Empty)
+    ) ~?=
+      Branch (1, 'a') 
+        (Branch (2, 'b') Empty Empty)
+        (Branch (3, 'c') Empty Empty)
+  ]
 
 -- `takeWhileTree`, applied to a predicate `p` and a tree `t`,
 -- returns the largest prefix tree of `t` (possibly empty)
@@ -691,9 +747,20 @@ tree1 = Branch 1 (Branch 2 Empty Empty) (Branch 3 Empty Empty)
 -- Empty
 
 takeWhileTree :: (a -> Bool) -> Tree a -> Tree a
-takeWhileTree = undefined
+takeWhileTree p t = 
+  foldTree (\v left right -> 
+      if p v then Branch v left right 
+      else Empty
+  ) Empty t
+
+
 ttakeWhileTree :: Test
-ttakeWhileTree = "takeWhileTree" ~: (assertFailure "testcase for takeWhileTree" :: Assertion)
+ttakeWhileTree = "takeWhileTree" ~: 
+  TestList[
+    takeWhileTree (< 3) tree1 ~?= Branch 1 (Branch 2 Empty Empty) Empty,
+    takeWhileTree (< 0) tree1 ~?= Empty,
+    takeWhileTree (< 0) Empty ~?= Empty
+  ]
 
 -- `allTree pred tree` returns `False` if any element of `tree`
 -- fails to satisfy `pred` and `True` otherwise. For example:
@@ -702,9 +769,25 @@ ttakeWhileTree = "takeWhileTree" ~: (assertFailure "testcase for takeWhileTree" 
 -- False
 
 allTree :: (a -> Bool) -> Tree a -> Bool
-allTree = undefined
+allTree p t = 
+  foldTree (\v left right -> 
+    p v && left && right
+  ) True t
+
 tallTree :: Test
-tallTree = "allTree" ~: (assertFailure "testcase for allTree" :: Assertion)
+tallTree = "allTree" ~: 
+  TestList[
+    allTree odd tree1 ~?= False,
+    allTree odd (Branch 2 Empty Empty) ~?= False,
+    allTree odd (Empty :: Tree Int) ~?= True,
+    allTree odd (Branch 3 Empty Empty) ~?= True,
+    allTree odd (Branch 3
+      (Branch 5 Empty Empty)
+      (Branch 7 Empty Empty)) ~?= True,
+    allTree odd (Branch 3
+      (Branch 5 Empty Empty)
+      (Branch 2 Empty Empty)) ~?= False
+  ]
 
 -- WARNING: This one is a bit tricky!  (Hint: use `foldTree` and remember
 --  that the value returned by `foldTree` can itself be a function. If you are
@@ -721,8 +804,27 @@ tallTree = "allTree" ~: (assertFailure "testcase for allTree" :: Assertion)
 -- Branch 4 Empty Empty
 
 map2Tree :: (a -> b -> c) -> Tree a -> Tree b -> Tree c
-map2Tree = undefined
+map2Tree f t1 t2 = foldTree step base t1 t2
+  where
+    base = \t2' -> Empty
+    step a rec1 rec2 = \t2' -> case t2' of 
+      Empty -> Empty
+      Branch b l2 r2 -> Branch (f a b) (rec1 l2) (rec2 r2)
+
 
 tmap2Tree :: Test
-tmap2Tree = "map2Tree" ~: (assertFailure "testcase for map2Tree" :: Assertion)
+tmap2Tree = "map2Tree" ~: 
+  TestList[
+    map2Tree (+) 
+    (Branch 1 Empty (Branch 2 Empty Empty)) 
+    (Branch 3 Empty Empty) ~?= Branch 4 Empty Empty,
+    map2Tree (+) (Empty) (Empty) ~?= Empty,
+    map2Tree (+) (Branch 1 Empty Empty) (Empty) ~?= Empty,
+    map2Tree (+) 
+      (Branch 1 Empty Empty) (Branch 10 Empty Empty) ~?= Branch 11 Empty Empty,
+    map2Tree (+) 
+      (Branch 1 (Branch 2 Empty Empty) Empty) 
+      (Branch 1 (Branch 2 Empty Empty) Empty) ~?= 
+        Branch 2 (Branch 4 Empty Empty) Empty
+  ]
 
