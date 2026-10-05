@@ -129,9 +129,11 @@ zip (x : xs) (y : ys) = (x, y) : zip xs ys
 
 tzip :: Test
 tzip = "zip" ~:
-  TestList [ zip "abc" [True,False,True] ~?= [('a',True),('b',False), ('c', True)],
-             zip "abc" [True] ~?= [('a', True)],
-             zip [] [] ~?= ([] :: [(Int,Int)]) ]
+  TestList [ 
+    zip "abc" [True,False,True] ~?= [('a',True),('b',False), ('c', True)],
+    zip "abc" [True] ~?= [('a', True)],
+    zip [] [] ~?= ([] :: [(Int,Int)]) 
+  ]
 
 --------------------------------------------------------------------------------
 -- Problem (List library chops)
@@ -720,7 +722,8 @@ invertTree t = mapTree (\(x, y) -> (y, x)) t
 tinvertTree :: Test
 tinvertTree = "invertTree" ~:
   TestList[
-    invertTree (Branch ("a", True) Empty Empty) ~?= Branch (True,"a") Empty Empty,
+    invertTree 
+      (Branch ("a", True) Empty Empty) ~?= Branch (True,"a") Empty Empty,
     invertTree (Empty :: Tree (Char, Int)) ~?= Empty,
     invertTree (
       Branch ('a', 1) 
