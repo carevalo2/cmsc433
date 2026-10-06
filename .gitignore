@@ -7,3 +7,4 @@
 *.runtimeconfig.json
 .stack-work/
 .vscode
+.stack-work/
