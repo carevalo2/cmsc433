@@ -5,6 +5,19 @@
 *.pdb
 *.deps.json
 *.runtimeconfig.json
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.toc
+*.out
+*.nav
+*.snm
+*.vrb
+# Generated worksheet PDFs (keep source exam and course PDFs)
+/midterms/midterm-practice/Q4-*.pdf
 .stack-work/
 .vscode
 .stack-work/
