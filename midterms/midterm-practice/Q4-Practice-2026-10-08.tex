@@ -1,0 +1,81 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.85in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[T1]{fontenc}
+
+% EDIT YOUR ANSWERS HERE. Replace \text{TODO} with a math expression.
+% Useful syntax: \land (and), \neg (not), \ge (>=), \cdot (multiply).
+% Keep assignment substitutions unsimplified unless a ->> allows consequence.
+\newcommand{\answerA}{\text{TODO}}
+\newcommand{\answerB}{\text{TODO}}
+\newcommand{\answerC}{\text{TODO}}
+\newcommand{\answerD}{\text{TODO}}
+\newcommand{\answerE}{\text{TODO}}
+\newcommand{\answerF}{\text{TODO}}
+\newcommand{\answerG}{\text{TODO}}
+\newcommand{\answerH}{\text{TODO}}
+\newcommand{\answerI}{\text{TODO}}
+
+\newcommand{\assertion}[2]{%
+  \noindent\makebox[1.8em][l]{\textsf{#1}}%
+  $\{\!\{\;#2\;\}\!\}$\par\smallskip}
+\newcommand{\code}[1]{\noindent\hspace*{1.8em}\texttt{#1}\par\smallskip}
+\newcommand{\consequence}{\mathrel{\texttt{->>}}}
+
+\begin{document}
+\section*{Hoare Logic Practice: October 8, 2026 (20 points)}
+Consider the following Dafny program that inefficiently calculates four
+plus the product of two integers. The integer p may be positive, zero, or negative:
+\begin{verbatim}
+method ProductPlusFour(n:int, p:int) returns (y:int)
+requires n >= 0
+ensures y == 4 + n*p
+{
+  y := 4;
+  var x := p;
+  var z := 0;
+  while (z < n)
+  {
+    z := z + 1;
+    y := y + x;
+  }
+}
+\end{verbatim}
+Fill in the annotations below to show that the Hoare triple given by the
+outermost pre- and postconditions is valid. Be completely precise and
+pedantic in applying Hoare rules: write assertions in exactly the form
+given by the rules, rather than just logically equivalent ones. Working
+backward from the end should require the rule of consequence only at the
+places marked \texttt{->>}. Those implication steps may silently rely on
+the usual rules of arithmetic.
+
+\medskip
+\noindent Edit the nine answer commands near the top of this file.
+Labels A--I are worksheet labels, not part of the assertions.
+This is an original practice question modeled on the 2024 midterm.
+No answer key is included.
+\medskip
+
+\assertion{}{n \ge 0}
+\noindent\hspace*{1.8em}$\consequence$\par\smallskip
+\assertion{A}{\answerA}
+\code{y := 4;}
+\assertion{B}{\answerB}
+\code{var x := p;}
+\assertion{C}{\answerC}
+\code{var z := 0;}
+\assertion{D}{\answerD}
+\code{while (z < n) \{}
+\assertion{E}{\answerE}
+\noindent\hspace*{1.8em}$\consequence$\par\smallskip
+\assertion{F}{\answerF}
+\code{\quad z := z + 1;}
+\assertion{G}{\answerG}
+\code{\quad y := y + x;}
+\assertion{H}{\answerH}
+\code{\}}
+\assertion{I}{\answerI}
+\noindent\hspace*{1.8em}$\consequence$\par\smallskip
+\assertion{}{y = 4 + n * p}
+
+\end{document}
