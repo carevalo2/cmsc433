@@ -1,0 +1,81 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.85in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[T1]{fontenc}
+
+% EDIT YOUR ANSWERS HERE. Replace \text{TODO} with a math expression.
+% Useful syntax: \land (and), \neg (not), \ge (>=), \cdot (multiply).
+% Keep assignment substitutions unsimplified unless a ->> allows consequence.
+\newcommand{\answerA}{(0 = (m - m) * (m * m)) \land (m * m = m * m) \land (m \geq 0)}
+\newcommand{\answerB}{(y = (m - m) * (m * m)) \land (m * m = m * m) \land (m \geq 0)}
+\newcommand{\answerC}{(y = (m - m) * x) \land (x = m * m) \land (m \geq 0)}
+\newcommand{\answerD}{(y = (m - z) * x) \land (x = m * m) \land (z \geq 0)}
+\newcommand{\answerE}{((y = (m - z) * x) \land (x = m * m) \land (z \geq 0)) \land (z > 0)}
+\newcommand{\answerF}{((y + x) = (m - (z - 1)) * x) \land (x = m * m) \land ((z - 1) \geq 0)}
+\newcommand{\answerG}{((y + x) = (m - z) * x) \land (x = m * m) \land (z \geq 0)}
+\newcommand{\answerH}{(y = (m - z) * x) \land (x = m * m) \land (z \geq 0)}
+\newcommand{\answerI}{(y = (m - z) * x) \land (x = m * m) \land (z \geq 0) \land \neg (z > 0)}
+
+\newcommand{\assertion}[2]{%
+  \noindent\makebox[1.8em][l]{\textsf{#1}}%
+  $\{\!\{\;#2\;\}\!\}$\par\smallskip}
+\newcommand{\code}[1]{\noindent\hspace*{1.8em}\texttt{#1}\par\smallskip}
+\newcommand{\consequence}{\mathrel{\texttt{->>}}}
+
+\begin{document}
+\section*{2024 Midterm 1: Question 4 (20 points)}
+Consider the following Dafny program that inefficiently calculates the cube
+of a number:
+\begin{verbatim}
+method Cube(m:int) returns (y:int)
+requires m > 0
+ensures y == m*m*m
+{
+  y := 0;
+  var x := m * m;
+  var z := m;
+  while (z > 0)
+  {
+    z := z - 1;
+    y := y + x;
+  }
+}
+\end{verbatim}
+Fill in the annotations below to show that the Hoare triple given by the
+outermost pre- and postconditions is valid. Be completely precise and
+pedantic in applying Hoare rules: write assertions in exactly the form
+given by the rules, rather than just logically equivalent ones. Working
+backward from the end should require the rule of consequence only at the
+places marked \texttt{->>}. Those implication steps may silently rely on
+the usual rules of arithmetic.
+
+\medskip
+\noindent Edit the nine answer commands near the top of this file.
+Labels A--I are worksheet labels, not part of the assertions.
+The original decorated listing uses uppercase \texttt{Z} in its guard;
+that spelling is preserved below. The method above uses lowercase \texttt{z}.
+\medskip
+
+\assertion{}{m > 0}
+\noindent\hspace*{1.8em}$\consequence$\par\smallskip
+\assertion{A}{\answerA}
+\code{y := 0;}
+\assertion{B}{\answerB}
+\code{var x := m * m;}
+\assertion{C}{\answerC}
+\code{var z := m;}
+\assertion{D}{\answerD}
+\code{while (Z > 0) \{}
+\assertion{E}{\answerE}
+\noindent\hspace*{1.8em}$\consequence$\par\smallskip
+\assertion{F}{\answerF}
+\code{\quad z := z - 1;}
+\assertion{G}{\answerG}
+\code{\quad y := y + x;}
+\assertion{H}{\answerH}
+\code{\}}
+\assertion{I}{\answerI}
+\noindent\hspace*{1.8em}$\consequence$\par\smallskip
+\assertion{}{y = m * m * m}
+
+\end{document}

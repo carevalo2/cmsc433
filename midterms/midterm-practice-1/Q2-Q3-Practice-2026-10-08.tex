@@ -1,0 +1,420 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  upquote=true,
+  breaklines=true,
+  aboveskip=3pt,
+  belowskip=3pt
+}
+\lstdefinestyle{answer}{frame=single, framesep=5pt}
+\renewcommand{\labelenumi}{(\alph{enumi})}
+\setlength{\parindent}{0pt}
+
+% EDITING: Replace TODO inside each answer listing with ordinary Haskell.
+% Backslashes, arrows, underscores, and multi-line answers need no escaping
+% inside lstlisting. For example, write a lambda as: \x -> ...
+% Compile this file again after editing to update its PDF.
+% Original practice questions modeled on Q2 and Q3 of the 2024 midterm.
+% No answer key is included.
+
+\begin{document}
+\raggedbottom
+\section*{Haskell Types Practice: October 8, 2026}
+This worksheet follows Questions 2 and 3 of the Spring 2024 CMSC 433
+midterm, with different expressions and target types. The two main
+sections are worth 20 points each. Optional challenges follow.
+
+\textbf{Editing:} Replace each \texttt{TODO} in this source file with
+your answer. Answer boxes accept ordinary Haskell syntax.
+
+\subsection*{Question 2: What is the type? (20 points)}
+For each expression, give its \textbf{most general Haskell type}, including
+all necessary typeclass constraints, or write \texttt{ill-typed} and
+briefly explain the mismatch. \textbf{Exam convention: treat all raw
+numeric literals as \texttt{Int}.} Give the most general type under
+that convention. Use the reference appendix for library signatures.
+
+\begin{enumerate}
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+\x y -> (y, x, x)
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+a -> b -> (b, a, a)
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+\x y -> if x < y then show x else show (y, x)
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+(Ord a, Show a) => a -> a -> String
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+\x xs -> x : reverse xs ++ [x]
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+a -> [a] -> [a]
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+foldr (const False)
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+ill typed
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+(, 'q')
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+a -> (a, Char)
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+(,) ['q']
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+b -> ([Char], b)
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+reverse . map Just
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+[a] -> [Maybe a]
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+\xs -> filter (>= 7) (reverse xs)
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+[Int] -> [Int]
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+let keep x = x in (keep 'q', keep [False])
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+(Char, [Bool])
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+fmap (fmap (== 'q')) [Nothing, Just 'r']
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+[Maybe Bool]
+\end{lstlisting}
+\end{minipage}
+
+\end{enumerate}
+
+\subsection*{Question 3: Give an expression matching the type (20 points)}
+For each type below, write a Haskell expression that has that type.
+Do not write trivial expressions (such as \texttt{[]}, \texttt{Nothing},
+or \texttt{undefined}) unless there is no other option. You may use any
+function from the appendix, \texttt{do} syntax, list comprehensions,
+or any valid Haskell.
+
+\begin{enumerate}
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+Bool -> Maybe Bool
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+\x -> if x then Just x else Nothing
+
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+a -> [b]
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+\x -> []
+
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+(Char -> Int -> Bool) -> [Char] -> [Int] -> [Bool]
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+liftA2
+
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+(a -> b -> c) -> Maybe a -> Maybe b -> Maybe (c, b)
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+\f -> liftA2 (\x y -> (f x y, y))
+
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+(a -> b) -> (a -> Bool) -> [a] -> [b]
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+\f f2 xs -> map f (filter f2 xs)
+
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+Maybe a -> (a -> [b]) -> [(b, a)]
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+\ma f -> maybe [] (\x -> map (\y -> (y, x)) (f x)) ma
+
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+Eq a => [a] -> a -> [Bool]
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+\(x:xs) y -> if y == x then [True] else [False]
+
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+Show a => Maybe a -> IO String
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+\ma -> return (show ma)
+
+
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+(a -> b -> c) -> (b, a) -> c
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+\f (b, a) -> f a b 
+
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+\vspace{-\baselineskip}
+\begin{lstlisting}
+((a, b) -> c) -> b -> c
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+undefined
+
+
+\end{lstlisting}
+\end{minipage}
+
+\end{enumerate}
+
+\subsection*{Optional challenges}
+These are additional practice and are not part of the 40-point worksheet.
+
+\begin{enumerate}
+\item
+\begin{minipage}[t]{\linewidth}
+Give the most general type or explain the type error. Compare
+the reason for your answer with Question 2(i).
+\begin{lstlisting}
+\keep -> (keep 'q', keep [False])
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+TODO
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+Give the most general type or explain the type error. Identify
+the structures acted on by both occurrences of \texttt{fmap}.
+\begin{lstlisting}
+fmap (fmap not) [Just True, Nothing, Just 'q']
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+TODO
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+Give the most general type. Which type variable belongs to the
+input container, and which belongs to the accumulator?
+\begin{lstlisting}
+foldl (flip (:)) []
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+TODO
+
+\end{lstlisting}
+\end{minipage}
+
+\item
+\begin{minipage}[t]{\linewidth}
+Give an expression of this type. Apply the function to each
+input, discard absent results, and pair each present result with its
+original input. Preserve input order, including duplicates.
+\begin{lstlisting}
+(a -> Maybe b) -> [a] -> [(a, b)]
+\end{lstlisting}
+\begin{lstlisting}[style=answer]
+TODO
+
+
+
+\end{lstlisting}
+\end{minipage}
+
+\end{enumerate}
+
+\subsection*{Reference appendix}
+These signatures use the generalized \texttt{Foldable} versions from
+the old exam's appendix. \texttt{String} is a synonym for \texttt{[Char]}.
+Tuple sections, such as \texttt{(, False)}, are allowed as in the exam;
+enable \texttt{TupleSections} if checking them in GHCi.
+
+\begin{lstlisting}
+data Bool = False | True
+data Maybe a = Nothing | Just a
+
+id :: a -> a
+const :: a -> b -> a
+flip :: (a -> b -> c) -> b -> a -> c
+(.) :: (b -> c) -> (a -> b) -> a -> c
+(,) :: a -> b -> (a, b)
+
+not :: Bool -> Bool
+(==), (/=) :: Eq a => a -> a -> Bool
+(<), (<=), (>), (>=) :: Ord a => a -> a -> Bool
+(+), (-), (*) :: Num a => a -> a -> a
+show :: Show a => a -> String
+
+(:) :: a -> [a] -> [a]
+(++) :: [a] -> [a] -> [a]
+reverse :: [a] -> [a]
+map :: (a -> b) -> [a] -> [b]
+filter :: (a -> Bool) -> [a] -> [a]
+foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b
+foldl :: Foldable t => (b -> a -> b) -> b -> t a -> b
+
+fmap :: Functor f => (a -> b) -> f a -> f b
+pure :: Applicative f => a -> f a
+(<*>) :: Applicative f => f (a -> b) -> f a -> f b
+liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
+return :: Monad m => a -> m a
+(>>=) :: Monad m => m a -> (a -> m b) -> m b
+(>>) :: Monad m => m a -> m b -> m b
+
+maybe :: b -> (a -> b) -> Maybe a -> b
+maybeToList :: Maybe a -> [a]
+mapMaybe :: (a -> Maybe b) -> [a] -> [b]
+
+print :: Show a => a -> IO ()
+putStrLn :: String -> IO ()
+\end{lstlisting}
+\textbf{Numeric literals:} For this worksheet, raw numbers have type
+\texttt{Int}, following the TA's exam clarification. When a type is
+fixed to \texttt{Int}, omit constraints such as \texttt{Ord Int} and
+\texttt{Num Int}, since those instances are already known. Library
+signatures above remain general. In GHCi, annotate a literal with
+\texttt{:: Int} to reproduce the exam convention when checking a type.
+
+\textbf{Constraints:} \texttt{Ord a} implies \texttt{Eq a}; it does not
+imply \texttt{Num a} or \texttt{Show a}. Lists and \texttt{Maybe} are
+instances of \texttt{Functor}, \texttt{Applicative}, and \texttt{Monad}.
+They are also \texttt{Foldable}. Tuples and \texttt{Maybe a} have
+\texttt{Show} instances when their contained types have \texttt{Show}
+instances.
+
+\end{document}
