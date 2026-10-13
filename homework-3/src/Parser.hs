@@ -71,7 +71,7 @@ need the `space` parser from the ParserLib library.
 -}
 
 wsP :: Parser a -> Parser a
-wsP p = undefined
+wsP p = p <* many P.space
 
 test_wsP :: Test
 test_wsP = TestList [
@@ -86,7 +86,7 @@ that trailing whitespace is being treated appropriately.
 -}
 
 stringP :: String -> Parser ()
-stringP = undefined
+stringP s = wsP (P.string s) *> pure ()
 
 test_stringP :: Test
 test_stringP = TestList [
@@ -99,7 +99,7 @@ test_stringP = TestList [
 -- | given value `x`, and also and consume any white space that follows.
 
 constP :: String -> a -> Parser a
-constP _ _ = undefined
+constP s x = stringP s *> pure x
 
 test_constP :: Test
 test_constP = TestList [
@@ -119,7 +119,7 @@ braces x = P.between (stringP "{") x (stringP "}")
 -- >>> P.parse (many (brackets (constP "1" 1))) "[1] [  1]   [1 ]"
 -- Right [1,1,1]
 brackets :: Parser a -> Parser a
-brackets x = undefined
+brackets x = P.between (stringP "[") x (stringP "]")
 
 
 
@@ -141,12 +141,12 @@ valueP = intValP <|> boolValP
 -- >>> P.parse (many intValP) "1 2\n 3"
 -- Right [IntVal 1,IntVal 2,IntVal 3]
 intValP :: Parser Value
-intValP = undefined
+intValP = IntVal <$> wsP P.int
 
 -- >>> P.parse (many boolValP) "true false\n true"
 -- Right [BoolVal True,BoolVal False,BoolVal True]
 boolValP :: Parser Value
-boolValP = undefined
+boolValP = constP "true" (BoolVal True) <|> constP "false" (BoolVal False)
 
 -- | At this point you should be able to run tests using the `prop_roundtrip_val` property. 
 
@@ -220,7 +220,10 @@ reserved = [ "assert", "break","else","Length"
 -- >>> P.parse (many nameP) "x sfds _ int"
 -- Right ["x","sfds", "_"]
 nameP :: Parser Name
-nameP = undefined
+nameP = wsP (P.filter (\x -> notElem x reserved) ((:) <$> firstP <*> restP))
+  where
+    firstP = P.alpha <|> P.char '_'
+    restP = many (P.alpha <|> P.char '_' <|> P.digit)
 
 -- Now write parsers for the unary and binary operators. Make sure you
 --  check out the Syntax module for the list of all possible
@@ -229,13 +232,26 @@ nameP = undefined
 -- >>> P.parse (many uopP) "- - !"
 -- Right [Neg,Neg,Not]
 uopP :: Parser Uop
-uopP = undefined
+uopP = constP "-" Neg <|> constP "!" Not
 
 -- >>> P.parse (many bopP) "+ >= &&"
 -- Right [Plus,Ge,Conj]
 bopP :: Parser Bop
-bopP = undefined
-
+bopP = constP "+" Plus
+   <|> constP "&&" Conj
+   <|> constP "||" Disj
+   <|> constP "-" Minus
+   <|> constP "*" Times
+   <|> constP "/" Divide
+   <|> constP "%" Modulo
+   <|> constP "<==>" Iff
+   <|> constP "==>" Implies
+   <|> constP "==" Eq
+   <|> constP "!=" Neq
+   <|> constP ">=" Ge
+   <|> constP ">" Gt
+   <|> constP "<=" Le
+   <|> constP "<" Lt
 -- | At this point you should be able to test the  `prop_roundtrip_exp` property.
 
 {- | Parsing Statements
@@ -246,17 +262,44 @@ First, define a parser for bindings...
 -}
 
 bindingP :: Parser Binding
-bindingP = undefined
+bindingP = (,) <$> (nameP <* stringP ":") <*> typeP
 
 -- | ...and predicates...
 predicateP :: Parser Predicate
-predicateP = undefined
+predicateP = P.chainl1 basePredP (combineWith <$> logicalOpP)
+  where
+     groupedPredP = 
+          parens (PredOp <$> parens predicateP <*> logicalOpP
+          <*> parens predicateP)
+     basePredP =
+          groupedPredP
+          <|> quantifiedP 
+          <|> Forall [] <$> expP 
+          <|> parens predicateP
+     quantifiedP =
+          Forall <$> (stringP "forall" *> P.sepBy1 bindingP (stringP ",")
+          <* stringP "::")
+          <*> expP
+     logicalOpP =
+          P.filter (\op -> elem op [Conj, Disj, Implies, Iff]) bopP
+     combineWith op left right = PredOp left op right
 
 -- | Finally, define a parser for statements:
 
 statementP :: Parser Statement
-statementP = undefined
-
+statementP = (Assign <$> (varP <* stringP ":=") <*> expP) <* stringP ";"
+     <|> (Decl <$> (stringP "var" *> bindingP <* stringP ":=") <*> expP) 
+          <* stringP ";"
+     <|> (If <$> (stringP "if" *> expP)
+          <*> blockP
+          <*> ((stringP "else" *> blockP)
+               <|> pure (Block [])))
+     <|> (buildWhile <$> (stringP "while" *> expP)
+               <*> invariantP
+               <*> blockP)
+     where
+          buildWhile condition invariant body = 
+               While invariant condition body
 
 invariantP :: Parser Predicate
 invariantP = (stringP "invariant" *> predicateP) <|> pure (Forall [] (Val (BoolVal True)))
@@ -264,7 +307,7 @@ invariantP = (stringP "invariant" *> predicateP) <|> pure (Forall [] (Val (BoolV
 -- | ... and one for blocks.
 
 blockP :: Parser Block
-blockP = undefined
+blockP = Block <$> braces (many statementP)
 
 {- | Parsing Methods
      ---------------
@@ -275,7 +318,17 @@ blockP = undefined
 -}
 
 methodP :: Parser Method
-methodP = undefined
+methodP = Method <$> (stringP "method" *> nameP) 
+          <*> bindingsP 
+          <*> outputsP
+          <*> many specP 
+          <*> blockP
+     where 
+          bindingsP = parens (P.sepBy bindingP (stringP ","))
+          outputsP = (stringP "returns" *> bindingsP) <|> pure []
+          specP = 
+               Requires <$> (stringP "requires" *> predicateP)
+               <|> Ensures <$> (stringP "ensures" *> predicateP)
 
  
 {- | Parsing Expressions and Files
@@ -355,4 +408,3 @@ test_stat = "parsing statements" ~: TestList [
 
 test_all :: IO Counts
 test_all = runTestTT $ TestList [ test_comb, test_value, test_exp, test_stat] -- tParseFiles ]
-
