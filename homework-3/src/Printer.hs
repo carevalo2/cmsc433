@@ -133,11 +133,18 @@ instance PP Int where
 
 -- | TODO: Implement pretty printing for Booleans and lists of integers
 instance PP Bool where
+<<<<<<< HEAD
   pp True = PP.text "true"
   pp False = PP.text "false"
 
 instance PP [Int] where
   pp ints = PP.brackets(PP.hsep (PP.punctuate PP.comma (map pp ints)))
+=======
+  pp = undefined
+
+instance PP [Int] where
+  pp = undefined
+>>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- | That should allow you to also pretty pring values if needed.
 instance PP Value where
@@ -148,6 +155,7 @@ instance PP Value where
 -- | TODO: Implement pretty printing for binary operators
 instance PP Bop where
   pp Plus   = PP.char '+'
+<<<<<<< HEAD
   pp Minus = PP.char '-'
   pp Times = PP.char '*'
   pp Divide = PP.char '/'
@@ -162,6 +170,9 @@ instance PP Bop where
   pp Disj = PP.text "||"
   pp Implies = PP.text "==>"
   pp Iff = PP.text "<==>"
+=======
+  pp _ = undefined
+>>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- | Types and bindings can be pretty printed
 
@@ -172,7 +183,11 @@ instance PP Type where
 
 -- | TODO: Implement pretty printing for bindings
 instance PP Binding where
+<<<<<<< HEAD
   pp (name, typ) = PP.text name <+> PP.char ':' <+> pp typ
+=======
+  pp = undefined  
+>>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 {- |
    Expressions are trickier if you want to avoid putting parentheses everywhere.
@@ -195,8 +210,12 @@ editing the following code appropriately.
 
 instance PP Expression where
   pp (Var v) = pp v
+<<<<<<< HEAD
   pp (Val v) = pp v  
   pp (Op1 Len v) = pp v <> pp Len
+=======
+  pp (Val v) = pp v   
+>>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
   pp (Op1 o v) = pp o <+> if isBase v then pp v else PP.parens (pp v)
   pp e@Op2{} = ppPrec 0 e  where
      ppPrec n (Op2 e1 bop e2) =
@@ -224,20 +243,29 @@ level _      = 2    -- comparison operators
 
 -- | TODO: Implement pretty printing for variables
 instance PP Var where
+<<<<<<< HEAD
   pp (Name name) = PP.text name
   pp (Proj name expression) = PP.text name <> PP.brackets (pp expression)
+=======
+  pp = undefined 
+>>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- | TODO: Implement pretty printing for blocks
 
 instance PP Block where
+<<<<<<< HEAD
   pp (Block statements) = 
     PP.char '{' PP.$+$
     PP.nest 4 (PP.vcat (map pp statements)) PP.$+$
     PP.char '}'
+=======
+  pp = undefined
+>>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- | TODO: Implement the rest of pretty printing for statements.
 
 instance PP Statement where
+<<<<<<< HEAD
   pp (Decl binding e) = 
     PP.text "var" <+> pp binding <+> PP.text ":=" <+> (pp e <> PP.char ';')
   pp (Assign var e) = 
@@ -249,6 +277,9 @@ instance PP Statement where
       PP.text "while" <+> pp e, PP.text "invariant" <+> pp predicate, pp b
     ]
 
+=======
+  pp _ = undefined
+>>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 instance PP [Binding] where
   pp bs = PP.parens $ PP.hsep $ PP.punctuate PP.comma $ map pp bs
@@ -258,6 +289,7 @@ instance PP [Binding] where
 -- You don't have to for this homework, but you can try adopting the pretty
 -- printing code for expressions if you want.
 instance PP Predicate where
+<<<<<<< HEAD
   pp (Forall [] e) = pp e
   pp (Forall binds e) = 
     PP.text "forall" <+> PP.hsep(PP.punctuate PP.comma (map pp binds))
@@ -268,10 +300,14 @@ instance PP Predicate where
 instance PP Specification where 
   pp (Requires predicate) = PP.text "requires" <+> pp predicate
   pp (Ensures predicate) = PP.text "ensures" <+> pp predicate
+=======
+  pp = undefined
+>>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- | TODO: Finally, implement pretty printing for MiniDafny methods
 
 instance PP Method where
+<<<<<<< HEAD
   pp (Method name binds1 binds2 specs block) = 
     PP.vcat[
       PP.text "method" <+> PP.text name <+> pp binds1 <+> PP.text "returns"
@@ -280,3 +316,7 @@ instance PP Method where
       pp block
     ]
     
+=======
+  pp = undefined
+
+>>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
