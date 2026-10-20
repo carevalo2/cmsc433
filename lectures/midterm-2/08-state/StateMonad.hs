@@ -260,7 +260,7 @@ of the types below.
 
 returnST :: a -> ST a
 -- returnST :: a -> Store -> (a, Store)
-returnST = undefined
+returnST = (,) -- a s = (a,s)
 
 bindST :: ST a -> (a -> ST b) -> ST b
 -- bindST :: (Store -> (a,Store)) -> (a -> (Store -> (b, Store))) -> (Store -> (b, Store))
