@@ -244,14 +244,10 @@ reserved = [ "assert", "break","else","Length"
 -- >>> P.parse (many nameP) "x sfds _ int"
 -- Right ["x","sfds", "_"]
 nameP :: Parser Name
-<<<<<<< HEAD
 nameP = wsP (P.filter (\x -> notElem x reserved) ((:) <$> firstP <*> restP))
   where
     firstP = P.alpha <|> P.char '_'
     restP = many (P.alpha <|> P.char '_' <|> P.digit)
-=======
-nameP = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- Now write parsers for the unary and binary operators. Make sure you
 --  check out the Syntax module for the list of all possible
@@ -260,16 +256,11 @@ nameP = undefined
 -- >>> P.parse (many uopP) "- - !"
 -- Right [Neg,Neg,Not]
 uopP :: Parser Uop
-<<<<<<< HEAD
 uopP = constP "-" Neg <|> constP "!" Not
-=======
-uopP = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- >>> P.parse (many bopP) "+ >= &&"
 -- Right [Plus,Ge,Conj]
 bopP :: Parser Bop
-<<<<<<< HEAD
 bopP = constP "+" Plus
    <|> constP "&&" Conj
    <|> constP "||" Disj
@@ -285,10 +276,6 @@ bopP = constP "+" Plus
    <|> constP ">" Gt
    <|> constP "<=" Le
    <|> constP "<" Lt
-=======
-bopP = undefined
-
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 -- | At this point you should be able to test the  `prop_roundtrip_exp` property.
 
 {- | Parsing Statements
@@ -299,7 +286,6 @@ First, define a parser for bindings...
 -}
 
 bindingP :: Parser Binding
-<<<<<<< HEAD
 bindingP = (,) <$> (nameP <* stringP ":") <*> typeP
 
 -- | ...and predicates...
@@ -321,18 +307,10 @@ predicateP = P.chainl1 basePredP (combineWith <$> logicalOpP)
      logicalOpP =
           P.filter (\op -> elem op [Conj, Disj, Implies, Iff]) bopP
      combineWith op left right = PredOp left op right
-=======
-bindingP = undefined
-
--- | ...and predicates...
-predicateP :: Parser Predicate
-predicateP = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- | Finally, define a parser for statements:
 
 statementP :: Parser Statement
-<<<<<<< HEAD
 statementP = (Assign <$> (varP <* stringP ":=") <*> expP) <* stringP ";"
      <|> (Decl <$> (stringP "var" *> bindingP <* stringP ":=") <*> expP) 
           <* stringP ";"
@@ -346,10 +324,6 @@ statementP = (Assign <$> (varP <* stringP ":=") <*> expP) <* stringP ";"
      where
           buildWhile condition invariant body = 
                While invariant condition body
-=======
-statementP = undefined
-
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 invariantP :: Parser Predicate
 invariantP = (stringP "invariant" *> predicateP) <|> pure (Forall [] (Val (BoolVal True)))
@@ -357,11 +331,7 @@ invariantP = (stringP "invariant" *> predicateP) <|> pure (Forall [] (Val (BoolV
 -- | ... and one for blocks.
 
 blockP :: Parser Block
-<<<<<<< HEAD
 blockP = Block <$> braces (many statementP)
-=======
-blockP = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 {- | Parsing Methods
      ---------------
@@ -372,7 +342,6 @@ blockP = undefined
 -}
 
 methodP :: Parser Method
-<<<<<<< HEAD
 methodP = Method <$> (stringP "method" *> nameP) 
           <*> bindingsP 
           <*> outputsP
@@ -384,9 +353,6 @@ methodP = Method <$> (stringP "method" *> nameP)
           specP = 
                Requires <$> (stringP "requires" *> predicateP)
                <|> Ensures <$> (stringP "ensures" *> predicateP)
-=======
-methodP = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
  
 {- | Parsing Expressions and Files
