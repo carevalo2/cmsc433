@@ -1,0 +1,11 @@
+cabal-version: 2.4
+name: functor-applicative-practice
+version: 0.1.0.0
+build-type: Simple
+
+library
+  exposed-modules: Practice
+  hs-source-dirs: .
+  build-depends: base >= 4.15 && < 5
+  default-language: Haskell2010
+  ghc-options: -Wall

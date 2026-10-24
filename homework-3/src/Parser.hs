@@ -71,11 +71,7 @@ need the `space` parser from the ParserLib library.
 -}
 
 wsP :: Parser a -> Parser a
-<<<<<<< HEAD
 wsP p = p <* many P.space
-=======
-wsP p = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 test_wsP :: Test
 test_wsP = TestList [
@@ -90,11 +86,7 @@ that trailing whitespace is being treated appropriately.
 -}
 
 stringP :: String -> Parser ()
-<<<<<<< HEAD
 stringP s = wsP (P.string s) *> pure ()
-=======
-stringP = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 test_stringP :: Test
 test_stringP = TestList [
@@ -107,11 +99,7 @@ test_stringP = TestList [
 -- | given value `x`, and also and consume any white space that follows.
 
 constP :: String -> a -> Parser a
-<<<<<<< HEAD
 constP s x = stringP s *> pure x
-=======
-constP _ _ = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 test_constP :: Test
 test_constP = TestList [
@@ -131,11 +119,7 @@ braces x = P.between (stringP "{") x (stringP "}")
 -- >>> P.parse (many (brackets (constP "1" 1))) "[1] [  1]   [1 ]"
 -- Right [1,1,1]
 brackets :: Parser a -> Parser a
-<<<<<<< HEAD
 brackets x = P.between (stringP "[") x (stringP "]")
-=======
-brackets x = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 
 
@@ -157,20 +141,12 @@ valueP = intValP <|> boolValP
 -- >>> P.parse (many intValP) "1 2\n 3"
 -- Right [IntVal 1,IntVal 2,IntVal 3]
 intValP :: Parser Value
-<<<<<<< HEAD
 intValP = IntVal <$> wsP P.int
-=======
-intValP = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- >>> P.parse (many boolValP) "true false\n true"
 -- Right [BoolVal True,BoolVal False,BoolVal True]
 boolValP :: Parser Value
-<<<<<<< HEAD
 boolValP = constP "true" (BoolVal True) <|> constP "false" (BoolVal False)
-=======
-boolValP = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- | At this point you should be able to run tests using the `prop_roundtrip_val` property. 
 
@@ -432,7 +408,3 @@ test_stat = "parsing statements" ~: TestList [
 
 test_all :: IO Counts
 test_all = runTestTT $ TestList [ test_comb, test_value, test_exp, test_stat] -- tParseFiles ]
-<<<<<<< HEAD
-=======
-
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)

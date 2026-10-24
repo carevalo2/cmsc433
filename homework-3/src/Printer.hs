@@ -133,18 +133,11 @@ instance PP Int where
 
 -- | TODO: Implement pretty printing for Booleans and lists of integers
 instance PP Bool where
-<<<<<<< HEAD
   pp True = PP.text "true"
   pp False = PP.text "false"
 
 instance PP [Int] where
   pp ints = PP.brackets(PP.hsep (PP.punctuate PP.comma (map pp ints)))
-=======
-  pp = undefined
-
-instance PP [Int] where
-  pp = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- | That should allow you to also pretty pring values if needed.
 instance PP Value where
@@ -155,7 +148,6 @@ instance PP Value where
 -- | TODO: Implement pretty printing for binary operators
 instance PP Bop where
   pp Plus   = PP.char '+'
-<<<<<<< HEAD
   pp Minus = PP.char '-'
   pp Times = PP.char '*'
   pp Divide = PP.char '/'
@@ -170,9 +162,6 @@ instance PP Bop where
   pp Disj = PP.text "||"
   pp Implies = PP.text "==>"
   pp Iff = PP.text "<==>"
-=======
-  pp _ = undefined
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 -- | Types and bindings can be pretty printed
 
@@ -183,11 +172,7 @@ instance PP Type where
 
 -- | TODO: Implement pretty printing for bindings
 instance PP Binding where
-<<<<<<< HEAD
   pp (name, typ) = PP.text name <+> PP.char ':' <+> pp typ
-=======
-  pp = undefined  
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
 
 {- |
    Expressions are trickier if you want to avoid putting parentheses everywhere.
@@ -210,12 +195,8 @@ editing the following code appropriately.
 
 instance PP Expression where
   pp (Var v) = pp v
-<<<<<<< HEAD
   pp (Val v) = pp v  
   pp (Op1 Len v) = pp v <> pp Len
-=======
-  pp (Val v) = pp v   
->>>>>>> d22b6ff (upd hw3 and moved to lectures materials by midterm)
   pp (Op1 o v) = pp o <+> if isBase v then pp v else PP.parens (pp v)
   pp e@Op2{} = ppPrec 0 e  where
      ppPrec n (Op2 e1 bop e2) =
