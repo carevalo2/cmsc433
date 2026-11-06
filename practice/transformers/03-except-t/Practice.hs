@@ -15,7 +15,7 @@ runChecked :: Checked a -> Int -> (Either String a, Int)
 runChecked action initial = runState (runExceptT action) initial
 
 -- 1. Predict runChecked sample 5. Explain the role of each lift.
--- Your answer:
+-- Your answer: (Right 5, 7)
 --
 sample :: Checked Int
 sample = do
@@ -27,7 +27,13 @@ sample = do
 -- Otherwise add amount to the state and return the NEW state.
 -- Use explicit lift for get/put/modify; no runners inside the action.
 addChecked :: Int -> Checked Int
-addChecked = undefined
+addChecked amount =
+  if amount < 0 then 
+    throwError "Negative amount"
+  else do
+    orig <- lift get 
+    lift (put (orig + amount))
+    pure (orig + amount)
 
 checkAddChecked :: Bool
 checkAddChecked = and
@@ -38,7 +44,7 @@ checkAddChecked = and
 
 -- 3. Predict runChecked partialFailure 0 BEFORE executing it.
 -- Which action is skipped? Does the caller see any state?
--- Your answer:
+-- Your answer: (Left "Stopped", 1)
 --
 partialFailure :: Checked ()
 partialFailure = do
@@ -50,7 +56,10 @@ partialFailure = do
 -- Then reject a zero denominator with throwError "Division by zero";
 -- otherwise return numerator `div` denominator. The state counts attempts.
 attemptDivision :: Int -> Int -> Checked Int
-attemptDivision = undefined
+attemptDivision n d = do
+  lift (modify(+ 1))
+  if d == 0 then throwError "Division by zero"
+  else pure (n `div` d)
 
 checkAttemptDivision :: Bool
 checkAttemptDivision = and
@@ -65,4 +74,8 @@ checkAttemptDivision = and
 -- Rewrite addChecked without explicit lift using that interface.
 -- Explain why direct get is supported; this does not mean lift unwraps values.
 addCheckedMtl :: Int -> Checked Int
-addCheckedMtl = undefined
+addCheckedMtl n =
+  if n < 0 then throwError "Negative amount"
+  else do 
+    orig <- get
+    put (orig + n) >> pure (orig + n)

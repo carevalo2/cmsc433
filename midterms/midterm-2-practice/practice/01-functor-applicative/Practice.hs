@@ -54,7 +54,7 @@ exampleApplied = exampleWaiting <*> Just 3
 -- Do not use pattern matching or do notation.
 -- | Multiplies two available numbers.
 multiplyMaybe :: Maybe Int -> Maybe Int -> Maybe Int
-multiplyMaybe = undefined
+multiplyMaybe mx my = (*) <$> mx <*> my
 
 -- SECTION 3: Constructors are functions too
 
@@ -66,7 +66,7 @@ data Score = Score String Int
 -- Use <$> and <*> without pattern matching or do notation.
 -- | Builds a score when both pieces of information are available.
 makeScore :: Maybe String -> Maybe Int -> Maybe Score
-makeScore = undefined
+makeScore ms mi = Score <$> ms <*> mi
 
 -- SECTION 4: Connect this to HW3's parsers (written reasoning only)
 -- Suppose these declarations are available:

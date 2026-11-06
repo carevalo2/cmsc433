@@ -25,7 +25,8 @@ library
                        Syntax,
                        Printer,
                        Parser,
-                       ParserLib
+                       ParserLib,
+                       VCGen
                        
  hs-source-dirs: src
 
@@ -35,7 +36,8 @@ executable miniDafny
   other-modules:       Syntax,
                        Printer,
                        Parser,
-                       ParserLib
+                       ParserLib,
+                       VCGen
                        
   hs-source-dirs: src
   build-depends: QuickCheck >= 2.14.3,

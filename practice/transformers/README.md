@@ -41,3 +41,16 @@ Prediction answer areas contain no solutions. Discuss later stages only when rea
 
 The division exercises use bounded Int values; arithmetic overflow is outside
 this practice's scope. No assignment files are changed.
+
+## Current study progress (November 4, 2026)
+
+The route above describes the full sequence. **Do not restart at 01:** Either and
+State-with-errors coding have been completed/reviewed. We are at the introduction
+to ExceptT; its coding exercises remain blank. Read
+[the current handoff](03-except-t/README.md) for the pending refresher, evidence,
+and exact next steps. Each numbered directory has its own progress README;
+04-transformer-order is explicitly marked upcoming.
+
+All four starter files compiled when authored. Current user implementations were
+read while saving this handoff; no new runtime checks were executed. Suggested
+check commands in prior chat are not evidence that Chris ran them.

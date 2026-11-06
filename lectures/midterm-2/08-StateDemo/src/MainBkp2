@@ -1,0 +1,145 @@
+module Main where
+
+-- Make sure you run this via `stack run` in the top-level folder.
+
+import qualified ParserLib as P
+
+import Control.Monad
+import System.Environment
+import Test.QuickCheck
+
+import Control.Monad.Identity 
+    ( Identity(runIdentity) )
+import Control.Monad.State
+    ( StateT(runStateT), MonadState(put, get), lift )
+import Control.Monad.Except
+    ( ExceptT, MonadError(throwError), runExceptT )
+
+
+import Data.Map (Map)
+import qualified Data.Map as Map
+
+data Term = Const Int 
+          | Add Term Term
+          | Var String
+          | Inc String -- x++
+
+type Store = Map String Int
+
+eval :: Term -> Store -> Maybe (Int, Store)
+eval (Const n) s = Just (n,s)
+eval (Add e1 e2) s =
+  case eval e1 s of 
+    Nothing -> Nothing
+    Just (n1, s') ->
+      case eval e2 s' of
+        Nothing -> Nothing
+        Just (n2, s'') -> Just (n1 + n2, s'')
+eval (Var x) s =
+  case Map.lookup x s of
+    Nothing -> Nothing
+    Just n  -> Just (n, s)
+eval (Inc x) s =
+  case Map.lookup x s of
+    Nothing -> Nothing
+    Just n  -> Just (n, Map.insert x (n+1) s)
+
+type Eval = StateT Store Maybe
+
+
+
+evalS :: Term -> Eval Int
+evalS (Const n) = return n
+evalS (Add e1 e2) = do
+  n1 <- evalS e1
+  n2 <- evalS e2
+  return (n1 + n2)
+evalS (Var x) = do
+  s <- get
+  case Map.lookup x s of
+    Nothing -> lift Nothing
+    Just n  -> return n
+  
+  
+
+          
+--ev :: Term -> Maybe Int
+--ev (Const n)   = Just n
+--ev (Add t1 t2) = do
+--  n1 <- ev t1
+--  n2 <- ev t2
+--  return $ n1 + n2
+--  case ev t1 of
+--    Nothing -> Nothing
+--    Just n1 ->
+--      case ev t2 of
+--        Nothing -> Nothing
+--        Just n2 -> Just (n1 + n2)
+
+
+
+
+{-
+eval :: Term -> Store -> Maybe (Int, Store)
+eval (Const n)   s = Just (n, s)
+eval (Add t1 t2) s =
+  case eval t1 s of
+    Nothing -> Nothing
+    Just (n1, s') ->
+      case eval t2 s' of
+        Nothing -> Nothing
+        Just (n2, s'') -> Just (n1 + n2, s'')
+-- eval (Mul t1 t2) s =
+--   let (n1, s')  = eval t1 s
+--       (n2, s'') = eval t2 s'
+--   in (n1 * n2, s'')
+eval (Var x)     s =
+  case Map.lookup x s of
+    Nothing -> Nothing -- error "variable uninitialized"
+    Just n  -> Just (n, s)
+eval (Inc x)     s =
+  case Map.lookup x s of
+    Nothing -> Nothing -- (0, Map.insert x 1 s)
+    Just n  -> Just (n, Map.insert x (n+1) s)
+
+-- get :: State Store Store
+-- put :: Store -> State Store ()
+-- modify :: (Store -> Store) -> State Store ()
+
+evalS :: (MonadError String m, MonadState Store m) => Term -> m Int
+evalS (Const n) = return n
+evalS (Add t1 t2) = do
+  n1 <- evalS t1
+  n2 <- evalS t2
+  return (n1 + n2)
+evalS (Mul t1 t2) = do
+  n1 <- evalS t1
+  n2 <- evalS t2
+  return (n1 * n2)
+evalS (Var x) = do
+  s <- get
+  case Map.lookup x s of
+    Nothing -> throwError $ x ++ " used uninitialized"
+    Just n  -> return n
+evalS (Inc x) = do
+  s <- get
+  let v = Map.findWithDefault 0 x s
+  put (Map.insert x (v + 1) s)
+  return v
+  -}
+main :: IO ()
+main = do
+  putStrLn "Hi"
+
+--  a <- getArgs
+--  s <- parseDafnyFile (head a)
+--  case s of
+--    Left err -> error err -- Giving better error messages is hard!
+--    Right p -> do
+--      putStrLn "Parsed Method:"
+--      putStrLn "=============="      
+--      putStrLn $ show p
+--      putStrLn ""
+--      putStrLn "Pretty Printed:"
+--      putStrLn "==============="            
+--      putStrLn $ pretty p

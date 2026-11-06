@@ -47,7 +47,7 @@ attemptErrorOutside = undefined
 -- 4. Once implemented, predict both success and failure runs with initial
 -- state 0, using arguments (12,3) and (12,0). Then compare their output shapes.
 -- Your answer:
---
+-- 
 
 checkAttempts :: Bool
 checkAttempts = and

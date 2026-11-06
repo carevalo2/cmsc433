@@ -1,0 +1,77 @@
+module Main where
+
+-- Make sure you run this via `stack run` in the top-level folder.
+
+import qualified ParserLib as P
+
+import Control.Monad
+import Control.Monad.State
+import System.Environment
+import Test.QuickCheck
+
+import Data.Map (Map)
+import qualified Data.Map as Map
+
+type Var = String
+
+data Term = Const Int
+          | Add Term Term
+          | Mul Term Term
+          | Var Var
+          | Inc Var
+
+type Store = Map Var Int
+
+eval :: Term -> Store -> (Int, Store)
+--      Term -> State Store Int
+eval (Const n)   s = (n, s)
+eval (Add t1 t2) s = let (n1, s')  = eval t1 s 
+                         (n2, s'') = eval t2 s'
+                     in (n1 + n2, s'')
+eval (Mul t1 t2) s = let (n1, s')  = eval t1 s
+                         (n2, s'') = eval t2 s'
+                     in (n1 * n2, s'')
+eval (Var x)     s = case Map.lookup x s of
+                       Nothing -> (0,s)
+                       Just n  -> (n,s)
+eval (Inc x)     s = case Map.lookup x s of
+                       Nothing -> (0, Map.insert x 1 s)
+                       Just n  -> (n, Map.insert x (n+1) s)
+
+evalS :: Term -> State Store Int
+evalS (Const n)   = return n
+evalS (Add t1 t2) = do
+  n1 <- evalS t1
+  n2 <- evalS t2
+  return $ n1 + n2
+evalS (Mul t1 t2) = do
+  n1 <- evalS t1
+  n2 <- evalS t2
+  return $ n1 * n2
+evalS (Var x) = do
+  s <- get
+  return $ Map.findWithDefault 0 x s
+evalS (Inc x) = do
+  s <- get  
+  modify $ Map.insertWith (+) x 1
+  return $ Map.findWithDefault 0 x s
+  
+
+
+
+main :: IO ()
+main = do
+  putStrLn "Hi"
+
+--  a <- getArgs
+--  s <- parseDafnyFile (head a)
+--  case s of
+--    Left err -> error err -- Giving better error messages is hard!
+--    Right p -> do
+--      putStrLn "Parsed Method:"
+--      putStrLn "=============="      
+--      putStrLn $ show p
+--      putStrLn ""
+--      putStrLn "Pretty Printed:"
+--      putStrLn "==============="            
+--      putStrLn $ pretty p
