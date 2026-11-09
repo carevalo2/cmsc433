@@ -86,7 +86,19 @@ class Subst a where
 
 instance Subst Expression where
   subst (Var (Proj _ _)) _ _ = error "Ignore arrays for this project"
-  subst _ _ _ = undefined
+  subst (Val v) _ _ = Val v
+  subst (Var (Name variable)) name replacement 
+    | variable == name = replacement 
+    | otherwise = Var (Name variable)
+  subst (Op2 left operator right) name replacement = 
+    Op2 
+      (subst left name replacement) 
+      operator 
+      (subst right name replacement)
+  subst (Op1 operator expression) name replacement = 
+    Op1 operator (subst expression name replacement)
+  
+
 
 -- | As an example, consider the loop invariant of Square:
 --
@@ -127,7 +139,14 @@ test_substExp = TestList [ "exp-subst" ~: subst wInv "y" wYPlus1 ~?= wInvSubstYY
 -- { forall i, a[i] > 0 }
 
 instance Subst Predicate where
-  subst = undefined
+  subst (PredOp left operator right) name replacement = 
+    PredOp
+      (subst left name replacement)
+      operator
+      (subst right name replacement)
+  subst (Forall bindings expression) name replacement
+    | elem name (map fst bindings) = Forall bindings expression 
+    | otherwise = Forall bindings (subst expression name replacement)
 
 test_substPred :: Test
 test_substPred = TestList [ "pred-subst" ~: subst (Forall [] wInv) "y" wYPlus1 ~?= Forall [] wInvSubstYY1 ]
@@ -197,15 +216,27 @@ class WP a where
 
 instance WP Statement where
   wp (Assign (Proj _ _) _) p = error "Ignore arrays for this project"
-  wp _ _ = undefined
+  wp (Assign (Name name) expression) postCondition = 
+    subst postCondition name expression 
+  wp (Decl (name, _) expression) postCondition = 
+    subst postCondition name expression
+  wp (If condition thenBlock elseBlock) postCondition = 
+    let thenRequirement = wp thenBlock postCondition
+        elseRequirement = wp elseBlock postCondition
+        thenRule = PredOp (Forall [] condition) Implies thenRequirement
+        elseRule = PredOp (Forall [] (Op1 Not condition)) Implies elseRequirement
+    in PredOp thenRule Conj elseRule 
+  wp (While invariant _ _) _ = invariant
 
 -- | You will also need to implement weakest preconditions for blocks
 --   of statements, by repeatedly getting the weakest precondition
 --   starting from the end.
 --   HINT: folds are your friend.
-instance WP Block where
-  wp _ _ = undefined
 
+instance WP Block where
+  wp (Block []) postCondition = postCondition
+  wp (Block (first : rest)) postCondition = 
+    wp first (wp (Block rest) postCondition)
 {- | Verification conditions |
    ---------------------------
 
@@ -265,12 +296,22 @@ test_vcStmt =
 
 -- | To implement this, first, calculate the latter two for a single statement:
 vcStmt :: Predicate -> Statement -> [Predicate]
-vcStmt p (While inv e b) = undefined
+vcStmt p (While invariant condition body) = 
+  let bodyRequirement = wp body invariant
+      iterationStart = PredOp invariant Conj (Forall [] condition)
+      preservation = PredOp iterationStart Implies bodyRequirement
+      exitFacts = PredOp invariant Conj (Forall [] (Op1 Not condition))
+      exitCheck = PredOp exitFacts Implies p
+  in [preservation, exitCheck]
 vcStmt _ _ = []
-
 -- | Then, calculate the while loop verification conditions for blocks.
 vcBlock :: Predicate -> Block -> [Predicate]
-vcBlock = undefined
+vcBlock p (Block []) = []
+vcBlock p (Block (first : rest)) = 
+  let afterFirst = wp (Block rest) p 
+      
+  in undefined 
+
 
 {- | Lifting to Methods |
    ----------------------
