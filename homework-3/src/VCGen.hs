@@ -309,8 +309,9 @@ vcBlock :: Predicate -> Block -> [Predicate]
 vcBlock p (Block []) = []
 vcBlock p (Block (first : rest)) = 
   let afterFirst = wp (Block rest) p 
-      
-  in undefined 
+      firstChecks = vcStmt afterFirst first
+      restChecks = vcBlock p (Block rest)
+  in firstChecks ++ restChecks 
 
 
 {- | Lifting to Methods |
@@ -344,8 +345,10 @@ vc :: Method -> [Predicate]
 vc (Method _ _ _ specs (Block ss)) =
   let e = ensures specs
       r = requires specs
-  in
-  undefined
+      bodyRequirement = wp (Block ss) e
+      entryCheck = PredOp r Implies bodyRequirement
+      loopChecks = vcBlock e (Block ss)
+  in [entryCheck] ++ loopChecks
 
 
 -- | As a complete end-to-end test, the verification conditions for the whole of
