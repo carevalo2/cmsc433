@@ -1,0 +1,41 @@
+\input{../../support/worksheet.tex}
+\begin{document}
+\sheettitle{06}{Verification conditions}{Guided practice}
+
+\textbf{Use with the chat:} do Question 1 first; then derive one loop obligation
+at a time. These are partial-correctness questions; omit termination obligations.
+
+\textbf{Worked example.} For \code{x := x - 2;} with postcondition $x\geq4$,
+substitution gives $x-2\geq4$, equivalently $x\geq6$. Work backward in a sequence.
+
+\task{1. Weakest precondition}
+Compute the weakest precondition of \code{x := y + 2; y := x - 1;}
+for postcondition $x>y\land y\geq0$. Show the intermediate formula.
+\answer{Before last assignment: [ ]; before first: [ ].}
+
+\task{2. One invariant, three obligations}
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+method Twice(n:int) returns (t:int)
+  requires n >= 0
+  ensures t == 2*n + 1
+{
+  t := 0;
+  var i := n;
+  while i > 0 {
+    t := t + 2;
+    i := i - 1;
+  }
+  t := t + 1;
+}
+\end{lstlisting}
+\end{minipage}\par
+Use invariant $I\equiv i\geq0\land t+2i=2n$.
+Derive initialization, preservation, and exit, substituting the code into each.
+Account for the final assignment when deriving the exit obligation.
+\answer{Initialization: [ ].}
+\answer{Preservation: [ ].}
+\answer{Exit: [ ].}
+\source{Sample Q3, p. 3; DafnyVerificationConditions physical pp. 3--30.}
+
+\end{document}

@@ -1,0 +1,14 @@
+cabal-version: 2.4
+name: midterm2-practice
+version: 0.1.0.0
+build-type: Simple
+
+library
+  exposed-modules:
+    StudyState
+    StudyCheck
+  hs-source-dirs:
+    support
+  build-depends: base >= 4.15 && < 5
+  default-language: Haskell2010
+  ghc-options: -Wall

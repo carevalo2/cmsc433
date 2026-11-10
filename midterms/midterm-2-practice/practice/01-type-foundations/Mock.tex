@@ -1,0 +1,35 @@
+\input{../../support/worksheet.tex}
+\begin{document}
+\sheettitle{01}{Type foundations}{Topic mock}
+
+\mockrules
+For each independent expression, give its most general type, including necessary
+constraints, or write ``ill-typed'' and explain the conflict. Show enough reasoning
+to justify your answer. These are type questions, not evaluation questions.
+\begin{enumerate}[label=(\alph*)]
+\item \code{\p -> (snd p, fst p)}
+\answer{[Type and reasoning.]}
+\item \code{\xs -> [x | x <- xs, x]}
+\answer{[Type and reasoning.]}
+\item \code{\xs -> map show xs}
+\answer{[Type and reasoning.]}
+\item \code{\f x -> (f x, f x)}
+\answer{[Type and reasoning.]}
+\item \code{\x -> x x}
+\answer{[Type or conflict.]}
+\item \code{\x -> (x + 1, x == x)}
+\answer{[Type and reasoning.]}
+\end{enumerate}
+\textbf{Supplied signatures}
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+fst :: (a,b) -> a
+snd :: (a,b) -> b
+map :: (a -> b) -> [a] -> [b]
+show :: Show a => a -> String
+(+) :: Num a => a -> a -> a
+(==) :: Eq a => a -> a -> Bool
+\end{lstlisting}
+\end{minipage}\par
+
+\end{document}

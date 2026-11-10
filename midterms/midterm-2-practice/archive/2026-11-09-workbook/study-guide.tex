@@ -1,0 +1,83 @@
+\documentclass[11pt,letterpaper,oneside]{report}
+\usepackage[margin=0.8in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,xcolor,listings,enumitem,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,plainpages=false,pdftitle={CMSC433 Midterm 2 Practice Workbook}}
+\definecolor{paper}{RGB}{246,248,250}
+\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{paper},columns=fullflexible,
+keepspaces=true,breaklines=true,showstringspaces=false,frame=single,
+rulecolor=\color{gray!30},aboveskip=0.5em,belowskip=0.5em}
+\lstnewenvironment{codeanswer}{\lstset{backgroundcolor=\color{white},frame=single}}{}
+\setlist[enumerate]{itemsep=0.7em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\ExplSyntaxOn
+\NewDocumentCommand{\code}{m}{\texttt{%
+\tl_set:Nx\l_tmpa_tl{\tl_to_str:n{#1}}%
+\seq_set_split:NnV\l_tmpa_seq{~}\l_tmpa_tl
+\seq_map_indexed_inline:Nn\l_tmpa_seq{%
+\int_compare:nNnT{##1}>{1}{\penalty0\relax\space}%
+\str_map_inline:nn{##2}{####1\kern0pt\relax}}}}
+\ExplSyntaxOff
+% TYPE YOUR WRITTEN ANSWERS INSIDE THESE BRACES in the included lesson.tex files.
+\newcommand{\answer}[1]{\par\nopagebreak[4]\smallskip\noindent\textbf{Answer: }#1\par\medskip}
+\newcommand{\task}[1]{\subsection*{#1}}
+\newcommand{\source}[1]{{\small\textbf{Source:} #1}\par}
+\newcommand{\ready}[1]{{\small\textbf{Checkpoint:} #1}\par}
+\setcounter{tocdepth}{0}
+\raggedbottom
+\makeatletter
+\renewcommand{\@makechapterhead}[1]{%
+  \vspace*{0pt}{\parindent\z@\raggedright\normalfont
+  \large\bfseries\@chapapp\space\thechapter\par\nobreak\vskip 6pt
+  \huge\bfseries #1\par\nobreak\vskip 18pt}}
+\renewcommand{\@makeschapterhead}[1]{%
+  \vspace*{0pt}{\parindent\z@\raggedright\normalfont
+  \huge\bfseries #1\par\nobreak\vskip 18pt}}
+\makeatother
+\begin{document}
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+\vspace*{0.6in}
+{\Huge\bfseries CMSC433\\[0.2em]Midterm 2 practice}\par
+\vspace{0.35in}
+{\LARGE An editable problem workbook}\par
+\vspace{0.2in}
+Types first, followed by code from signatures, monadic execution, State,
+verification conditions, laziness, and a mixed set.
+\vfill
+\textbf{How to answer}\par
+Open \code{study-guide.tex} and the relevant folder's \code{lesson.tex} in your
+editor. Replace the text inside \code{\answer{...}} for written answers.
+For coding questions, replace the \code{undefined} lines inside
+\code{codeanswer} blocks with your Haskell implementation. All answers can be
+written in LaTeX; no separate Haskell file is required. Rebuild the PDF with
+\code{.\build.ps1}. The companion \code{Practice.hs} files are optional for GHCi
+checks. The PDF is a compiled reading copy, not a fillable PDF form.
+\par\medskip
+\textbf{Practice basis}\par
+Spring 2025 sample Q1--Q5 and local lectures. No official Fall 2026 scope,
+timing, resource rules, or weighting is assumed. The mixed set matches the
+sample's question styles, not a verified current exam format. No solutions are
+included. Reference signatures are at the end.
+\par\medskip
+Prepared November 9, 2026. Sources and apparent source typos: \code{SOURCES.md}.
+\end{titlepage}
+\pagenumbering{roman}
+\hypersetup{pageanchor=true}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+\input{practice/01-type-foundations/lesson.tex}
+\input{practice/02-context-types/lesson.tex}
+\input{practice/03-type-to-code/lesson.tex}
+\input{practice/04-monads/lesson.tex}
+\input{practice/05-state/lesson.tex}
+\input{practice/06-verification/lesson.tex}
+\input{practice/07-laziness/lesson.tex}
+\input{practice/08-mixed-review/lesson.tex}
+\input{practice/09-lecture-extensions/lesson.tex}
+\appendix
+\input{reference.tex}
+\end{document}

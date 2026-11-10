@@ -1,0 +1,91 @@
+\chapter{State execution and implementation}
+\source{Sample Q1/Q2/Q4, pp. 1/2/4; State and StateMonad lectures.}
+Use this representation and the reference operations:
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+newtype State s a = S {runState :: s -> (a,s)}
+\end{lstlisting}
+\end{minipage}\par
+In every trace, keep a column for the returned value and another for
+state after the step. Report \code{(result, finalState)} in that order.
+
+\task{5.1. Evaluate and infer}
+\begin{enumerate}[label=(\alph*)]
+\item \code{runState (get >>= \n -> put (n*2) >> get) (5 :: Int)}
+\answer{[Step table, result, type.]}
+\item \code{runState (put False >> get) True}
+\answer{[Step table, result, type.]}
+\item \code{runState (modify reverse >> get) "abc"}
+\answer{[Step table, result, type.]}
+\item \code{runState ((,) <$> get) 'q'}
+\answer{[Returned function and final state; then apply the returned function to True.]}
+\item Using \code{bundle} from chapter 4, evaluate
+the following with Boolean functions as state:
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+runState (bundle [get, put not >> get]) id
+\end{lstlisting}
+\end{minipage}\par
+\answer{[Returned function list and final function; apply each to False.]}
+\end{enumerate}
+
+\task{5.2. Construct State actions from types}
+\code{swapStore} returns the reversed pair while leaving the stored pair
+unchanged. \code{projectStore f x} returns \code{f currentState x}, also leaving
+state unchanged. Use only the abstract State interface; do not construct \code{S}.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+swapStore :: State (a,b) (b,a)
+swapStore = undefined  -- YOUR CODE
+
+projectStore :: (a -> b -> c) -> b -> State a c
+projectStore = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+\answer{[For each: stored-state type; returned-value type.]}
+
+\task{5.3. Ordered updates}
+\code{fresh} returns the old integer counter and increments it once.
+\code{takeLabels n} collects \code{n} fresh labels; \code{n <= 0} leaves state
+unchanged. \code{pop} returns and removes the head of list state, or returns
+\code{Nothing} without changing empty state. No library traversal helpers.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+fresh :: State Int Int
+fresh = undefined  -- YOUR CODE
+
+takeLabels :: Int -> State Int [Int]
+takeLabels = undefined  -- YOUR CODE
+
+pop :: State [a] (Maybe a)
+pop = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+
+\task{5.4. Label a tree}
+Use \code{fresh} to attach consecutive labels to leaves, left subtree before
+right, advancing the counter once per leaf. Do not construct \code{S} or call
+\code{runState} inside your implementation.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+data Tree a = Leaf a | Branch (Tree a) (Tree a)
+labelTree :: Tree a -> State Int (Tree (a,Int))
+labelTree = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+
+\task{5.5. Function-valued state}
+Return the currently stored Boolean function and replace the stored function by
+\code{old . not}. Use the abstract State interface.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+snapshotFunction :: State (Bool -> Bool) (Bool -> Bool)
+snapshotFunction = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+\answer{[How would you check both functions without Show or Eq instances for functions?]}
+
+\task{5.6. Changed type question}
+Infer \code{\f x -> f <$> (put x >> get)}. Describe the symbolic result of
+running this action from a matching initial state \code{s0}.
+\answer{[Most general type; result/state pair in terms of f, x, and s0.]}

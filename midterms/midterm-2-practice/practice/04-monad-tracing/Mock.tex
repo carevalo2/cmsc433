@@ -1,0 +1,43 @@
+\input{../../support/worksheet.tex}
+\begin{document}
+\sheettitle{04}{Monad tracing}{Topic mock}
+
+\mockrules
+\textbf{Question 1.} Evaluate each expression using the program below. Leave
+function values such as \code{id}, \code{not}, and \code{const True} unevaluated.
+All parts are independent; preserve list enumeration order.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+pack :: Monad m => [m (a -> b)] -> m [a -> b]
+pack [] = return []
+pack (u:us) = do
+  f <- u
+  fs <- pack us
+  return (f:fs)
+\end{lstlisting}
+\end{minipage}\par
+\begin{enumerate}[label=(\alph*)]
+\item \code{pack [Just not]}
+\answer{[Result.]}
+\item \code{pack [Just not, Nothing]}
+\answer{[Result.]}
+\item \code{pack [[] :: [Bool -> Bool]]}
+\answer{[Result.]}
+\item \code{pack [[id,not], [const True]]}
+\answer{[Result in order.]}
+\end{enumerate}
+\textbf{Question 2.} Rewrite \code{pack} using exactly one call to \code{mapM},
+with no explicit recursion. Write your Haskell expression below.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+mapM :: Monad m => (a -> m b) -> [a] -> m [b]
+\end{lstlisting}
+\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+packViaMapM :: Monad m => [m (a -> b)] -> m [a -> b]
+packViaMapM = undefined  -- YOUR ANSWER
+\end{codeanswer}
+\end{minipage}\par
+
+\end{document}

@@ -1,0 +1,66 @@
+\chapter{Lecture extensions: coverage unconfirmed}
+These topics occur in your lectures but are not explicitly asked on the 2025
+sample. Attempt after the core sets, or when an announcement confirms scope.
+These are supplementary questions, not predictions of exam questions.
+
+\task{9.1. Transformer runner types}
+Use these supplied representations:
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+runStateT  :: StateT s m a -> s -> m (a,s)
+runExceptT :: ExceptT e m a -> m (Either e a)
+\end{lstlisting}
+\end{minipage}\par
+Expand each into a function type with no remaining transformer wrappers:
+(a) \code{StateT Int (Either String) Bool};
+(b) \code{ExceptT String (State Int) Bool}, after running both layers.
+Which ordering can return a final state together with an error? Justify from
+the expanded result shapes.
+\answer{[Expanded types and reasoning.]}
+
+\task{9.2. Immutable arrays and dynamic programming}
+Using the Dynamic lecture's array-based edit-distance definition, identify
+the base cells and the three predecessor cells for a mismatch. Explain why
+calling the naive recursive function rather than looking up the array in the
+recursive cases would lose sharing of subproblems.
+\answer{[Recurrence, base cases, sharing explanation. Source: Dynamic.hs, Recursion over indices and self-referential array.]}
+
+\clearpage
+\task{9.3. GADT evaluator}
+Use this indexed expression language. Implement the evaluator directly below.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+data Expr a where
+  Number :: Int -> Expr Int
+  Truth  :: Bool -> Expr Bool
+  Plus   :: Expr Int -> Expr Int -> Expr Int
+  If     :: Expr Bool -> Expr a -> Expr a -> Expr a
+\end{lstlisting}
+\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+evalExpr :: Expr a -> a
+evalExpr = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+Does the following expression type-check? Explain using the constructor types.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+Plus (Truth True) (Number 2)
+\end{lstlisting}
+\end{minipage}\par
+Source: GADTs.hs, A Typed Expression Evaluator.
+\answer{[Answer and type conflict, if any.]}
+
+\task{9.4. Agda and propositions as types}
+Use the tutorial's correspondence between implication and functions, conjunction
+and products, disjunction and sums, and falsity and an empty type.
+State the type representing $(P\land Q)\Rightarrow Q$, then implement its proof.
+Use the tutorial's product constructor/notation or define an equivalent record.
+Explain why negation of $P$ corresponds to $P\to\bot$, rather than to $\bot$ alone.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+-- YOUR AGDA TYPE AND PROOF
+\end{codeanswer}
+\end{minipage}\par
+\answer{[Negation explanation. Source: Tutorial.agda, Curry-Howard correspondence.]}

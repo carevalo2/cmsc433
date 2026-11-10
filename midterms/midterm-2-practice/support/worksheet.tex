@@ -1,0 +1,34 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,xcolor,listings,enumitem,hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,plainpages=false,pdftitle={CMSC433 Topic Practice}}
+\definecolor{paper}{RGB}{246,248,250}
+\lstset{basicstyle=\ttfamily\small,backgroundcolor=\color{paper},columns=fullflexible,
+keepspaces=true,breaklines=true,showstringspaces=false,frame=single,
+rulecolor=\color{gray!30},aboveskip=0.5em,belowskip=0.5em}
+\lstnewenvironment{codeanswer}{\lstset{backgroundcolor=\color{white},frame=single}}{}
+\setlist[enumerate]{itemsep=0.7em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5em}
+\ExplSyntaxOn
+\NewDocumentCommand{\code}{m}{\texttt{%
+\tl_set:Nx\l_tmpa_tl{\tl_to_str:n{#1}}%
+\seq_set_split:NnV\l_tmpa_seq{~}\l_tmpa_tl
+\seq_map_indexed_inline:Nn\l_tmpa_seq{%
+\int_compare:nNnT{##1}>{1}{\penalty0\relax\space}%
+\str_map_inline:nn{##2}{####1\kern0pt\relax}}}}
+\ExplSyntaxOff
+% TYPE YOUR WRITTEN ANSWERS INSIDE THESE BRACES in the included lesson.tex files.
+\newcommand{\answer}[1]{\par\nopagebreak[4]\smallskip\noindent\textbf{Answer: }#1\par\medskip}
+\newcommand{\task}[1]{\subsection*{#1}}
+\newcommand{\source}[1]{{\small\textbf{Source:} #1}\par}
+\newcommand{\ready}[1]{{\small\textbf{Checkpoint:} #1}\par}
+
+\raggedbottom
+\newcommand{\sheettitle}[3]{\noindent{\small CMSC433 / Part #1}\par
+{\Large\bfseries #2}\par{\large #3}\par\smallskip\hrule\medskip}
+\newcommand{\mockrules}{{\small Topic mock, using the sample's question styles.
+Attempt independently; feedback after the whole file. Untimed practice, no points
+assigned. Current exam scope and rules are unconfirmed.}\par}

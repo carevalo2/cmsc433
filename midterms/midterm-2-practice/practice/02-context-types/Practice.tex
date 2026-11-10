@@ -1,0 +1,34 @@
+\input{../../support/worksheet.tex}
+\begin{document}
+\sheettitle{02}{Functor, Applicative, and State types}{Guided practice}
+
+\textbf{Use with the chat:} work through one question at a time.
+
+\textbf{Idea.} \code{fmap} changes the value inside a context. For
+\code{State s a}, \code{s} is the stored type and \code{a} is the returned type.
+
+\textbf{Worked example.} \code{null <$> get} has type \code{State [a] Bool}:
+\code{null :: [a] -> Bool} forces the stored state to be a list; the result
+is a Boolean and the State context stays in place.
+
+\task{1. A function inside Maybe}
+Infer \code{(,) <$> Just False}. First write the type of \code{(,)} after
+supplying a Boolean, then retain the outer context.
+\answer{Intermediate function :: [ ]; whole expression :: [ ].}
+
+\task{2. Apply a contextual function}
+Infer \code{(++) <$> Just "a" <*> Just "bc"}.
+Give the type immediately before \code{<*>} and the whole type.
+\answer{[Intermediate type, final type, and why <*> fits.]}
+
+\task{3. Track the state separately}
+Infer \code{get >>= \xs -> put (reverse xs)}.
+\answer{Stored type: [ ]; returned type: [ ]; whole type: [ ].}
+
+\task{4. Changed independent question}
+Infer \code{\f -> modify f >> get}. Explain the relationship between the
+input and output types of \code{f}.
+\answer{[Most general type and reasoning.]}
+\source{Sample Q1, p. 1; Monads Functor/Applicative section; State interface.}
+
+\end{document}

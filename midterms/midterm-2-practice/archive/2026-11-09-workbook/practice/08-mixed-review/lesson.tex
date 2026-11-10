@@ -1,0 +1,159 @@
+\chapter{Mixed review: five sample-style questions}
+This is a fresh practice set modeled on the sample's Q1--Q5. It is not a mock
+with a verified current format, timing, or grading scheme. First attempt without
+earlier solutions, GHCi, or the reference. Record any assistance afterward.
+
+\task{Question 1. Most general types or ill-typed}
+Use the State interface from the reference. All parts are independent. Include
+constraints and briefly justify any type error.
+\begin{enumerate}[label=(\alph*)]
+\item \code{\xs -> [show x | x <- xs, even x]}
+\answer{[Answer.]}
+\item \code{get >>= \xs -> return (length xs)}
+\answer{[Answer.]}
+\item \code{modify (map Just)}
+\answer{[Answer.]}
+\item \code{put True >> return 'k'}
+\answer{[Answer.]}
+\item \code{(:) <$> get}
+\answer{[Answer.]}
+\item \code{\f mx -> fmap f mx >>= \y -> return (y,y)}
+\answer{[Answer.]}
+\end{enumerate}
+
+\clearpage
+\task{Question 2. Construct expressions from types}
+Give useful total implementations of the described behavior. Use the abstract
+State interface. For \code{collectEither}, use explicit recursion, not traversal
+helpers. It returns all Right values or the first Left error, left-to-right.
+\code{applyAfterRead f} applies \code{f} to current state without changing it.
+\code{rotateStore} changes triple state from \code{(x,y,z)} to \code{(z,x,y)}
+and returns the old triple. \code{liftThree} performs three actions left-to-right
+and combines their results; use do/bind/return, not lifting helpers.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+collectEither :: [Either e a] -> Either e [a]
+collectEither = undefined  -- YOUR CODE
+
+applyAfterRead :: (s -> a) -> State s a
+applyAfterRead = undefined  -- YOUR CODE
+
+rotateStore :: State (a,a,a) (a,a,a)
+rotateStore = undefined  -- YOUR CODE
+
+liftThree :: Monad m => (a -> b -> c -> d) -> m a -> m b -> m c -> m d
+liftThree = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+Can a total function of type \code{Monad m => m a -> a} work for all monads
+and all result types? Explain with a counterexample specialization.
+\answer{[Answer and reasoning.]}
+
+\clearpage
+\task{Question 3. Induced verification conditions}
+Use the mathematical function $\operatorname{Squares}(n)=0$ for $n\leq 0$,
+and $\operatorname{Squares}(n)=n^2+\operatorname{Squares}(n-1)$ otherwise.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+method SumSquares(n:int) returns (t:int)
+  requires n > 0
+  ensures t == Squares(n) + 4
+{
+  t := 0;
+  var i := n;
+  while i > 0 {
+    t := t + i*i;
+    i := i - 1;
+  }
+  t := t + 4;
+}
+\end{lstlisting}
+\end{minipage}\par
+For each invariant, list initialization, preservation, and exit obligations,
+including the suffix after the loop. Derive formulas even for an invalid invariant.
+This question asks for partial correctness; termination is outside this set.
+\begin{enumerate}[label=(\alph*)]
+\item $i\geq0\land t+\operatorname{Squares}(i)=\operatorname{Squares}(n)$.
+\answer{Initialization: [ ]. Preservation: [ ]. Exit: [ ].}
+\item $i\geq0\land t=\operatorname{Squares}(n-i)$.
+\answer{Initialization: [ ]. Preservation: [ ]. Exit: [ ].}
+\item $t=\operatorname{Squares}(i)$.
+\answer{Initialization: [ ]. Preservation: [ ]. Exit: [ ].}
+\end{enumerate}
+
+\clearpage
+\task{Question 4. Trace and rewrite a generic program}
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+pack :: Monad m => [m (a -> b)] -> m [a -> b]
+pack [] = return []
+pack (u:us) = do
+  f <- u
+  fs <- pack us
+  return (f:fs)
+\end{lstlisting}
+\end{minipage}\par
+Evaluate each expression, leaving functions as \code{id}, \code{not}, etc.
+where needed. For (e), both initial and stored functions are Boolean functions.
+\begin{enumerate}[label=(\alph*)]
+\item \code{pack [Just not]}
+\answer{[Answer.]}
+\item \code{pack [Just not, Nothing]}
+\answer{[Answer.]}
+\item \code{pack [[] :: [Bool -> Bool]]}
+\answer{[Answer.]}
+\item \code{pack [[not,id], [const True, const False]]}
+\answer{[Answer in enumeration order.]}
+\item \code{runState (pack [get, modify (. not) >> get]) id}
+\answer{[Returned functions and final stored function; apply each to True to check.]}
+\end{enumerate}
+Reimplement \code{pack} using exactly one call to \code{mapM}, without recursion.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+packViaMapM :: Monad m => [m (a -> b)] -> m [a -> b]
+packViaMapM = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+
+\clearpage
+\task{Question 5. Lazy summary and reconstruction}
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+scatterMin :: [Int] -> Int -> (Int,[Int])
+scatterMin [] seed = (seed,[])
+scatterMin [x] seed = (x,[seed])
+scatterMin (x:xs) seed = (min x rest,seed:out)
+  where (rest,out) = scatterMin xs seed
+\end{lstlisting}
+\end{minipage}\par
+Evaluate:
+\begin{enumerate}[label=(\alph*)]
+\item \code{scatterMin [] 11}
+\answer{[Answer.]}
+\item \code{scatterMin [8] 11}
+\answer{[Answer.]}
+\item \code{scatterMin [8,3,6] 11}
+\answer{[Answer.]}
+\item \code{scatterMin [8,3,6] (-20)}
+\answer{[Answer.]}
+\end{enumerate}
+Implement replacement of every element by the list minimum, returning an empty
+list on empty input. Use exactly two calls to \code{scatterMin} for nonempty input.
+Do not use explicit recursion, folds, \code{minimum}, \code{map}, \code{replicate},
+or other recursive list functions. Then give a one-call version under the same
+restrictions using a lazy recursive binding.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+toMinimumTwoPass :: [Int] -> [Int]
+toMinimumTwoPass = undefined  -- YOUR CODE
+
+toMinimumOneCall :: [Int] -> [Int]
+toMinimumOneCall = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+\answer{[Explain why the one-call binding is productive on finite nonempty inputs.]}
+
+\task{After your attempt}
+Record which questions were independent, hinted, or completed after an
+explanation. Choose one type error to revisit with a changed example.
+\answer{[Evidence and next review target; no predicted instructor grade.]}

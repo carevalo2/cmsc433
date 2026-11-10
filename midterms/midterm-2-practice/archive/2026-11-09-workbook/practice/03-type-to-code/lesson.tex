@@ -1,0 +1,79 @@
+\chapter{Implement functions from signatures}
+\source{Sample Q2, p. 2 and Q4(b), p. 4; GenericMonads lecture.}
+Write code directly in these answer blocks. Implement the described behavior,
+not merely an expression that type-checks. No \code{undefined}, \code{error},
+or intentional nontermination. The optional Haskell companion repeats these tasks.
+
+\task{3.1. Collect present values}
+Return all values in order when every element is \code{Just}; otherwise return
+\code{Nothing}. An empty list succeeds with an empty result. Use explicit
+recursion, not \code{sequence}, \code{traverse}, \code{mapM}, or equivalent helpers.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+collectMaybe :: [Maybe a] -> Maybe [a]
+collectMaybe = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+\answer{[Types of the head, recursive result, and constructed payload.]}
+
+\task{3.2. Generalize the operation}
+Implement left-to-right traversal and action collection. Use explicit recursion
+and do/bind/return; do not call traversal, sequencing, or monadic fold helpers.
+For \code{gather}, do not delegate to \code{walkM}.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+walkM :: Monad m => (a -> m b) -> [a] -> m [b]
+walkM = undefined  -- YOUR CODE
+
+gather :: Monad m => [m a] -> m [a]
+gather = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+
+\task{3.3. Rewrite using a library combinator}
+Reimplement \code{gather} with exactly one call to library \code{mapM}, with no
+explicit recursion. \code{mapM :: Monad m => (x -> m y) -> [x] -> m [y]}.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+gatherViaMapM :: Monad m => [m a] -> m [a]
+gatherViaMapM = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+\answer{[What are x and y in this use of mapM? What type must its function argument have?]}
+
+\clearpage
+\task{3.4. More generic monadic operations}
+Use only do/bind/return, ordinary application, and supplied arguments.
+\code{composeM} runs the first action-producing function and feeds its result
+to the second. \code{flattenM} removes one monadic layer. \code{liftTwoM}
+performs its two actions left-to-right and combines their results.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+composeM :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
+composeM = undefined  -- YOUR CODE
+
+flattenM :: Monad m => m (m a) -> m a
+flattenM = undefined  -- YOUR CODE
+
+liftTwoM :: Monad m => (a -> b -> c) -> m a -> m b -> m c
+liftTwoM = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+
+\task{3.5. A limit of polymorphism}
+Is there a total implementation of \code{forall m a. Monad m => m a} for
+every \code{m} and \code{a}? Explain using both \code{Maybe} and
+\code{State ()}. Why does the existence of \code{Nothing} not settle the question?
+\answer{[Reasoning about all monads and all result types.]}
+
+\task{3.6. Changed implementation}
+Implement \code{repeatAction}: collect the results of performing one action
+\code{n} times, in order. For \code{n <= 0}, perform no actions. Use explicit
+recursion; no \code{replicateM}, \code{mapM}, \code{sequence}, or \code{traverse}.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+repeatAction :: Monad m => Int -> m a -> m [a]
+repeatAction = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+\answer{[Predict repeatAction 2 "ab", including order, before running it.]}

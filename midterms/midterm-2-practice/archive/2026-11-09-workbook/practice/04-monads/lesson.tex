@@ -1,0 +1,83 @@
+\chapter{Evaluate monadic programs}
+\source{Sample Q4, p. 4; Monads lecture, do notation and List Monad.}
+Use this supplied function for Questions 4.1--4.2. Do not reimplement it here.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+bundle :: Monad m => [m a] -> m [a]
+bundle [] = return []
+bundle (u:us) = do
+  x <- u
+  xs <- bundle us
+  return (x:xs)
+\end{lstlisting}
+\end{minipage}\par
+
+\task{4.1. Values and types}
+Evaluate each expression and give its whole type. Leave function values such as
+\code{id} unevaluated when appropriate. All parts are independent.
+\begin{enumerate}[label=(\alph*)]
+\item \code{bundle [Just 'a', Just 'c']}
+\answer{[Result and type.]}
+\item \code{bundle [Just not, Nothing]}
+\answer{[Result and type.]}
+\item \code{bundle [[] :: [Bool]]}
+\answer{[Result and type.]}
+\item \code{bundle ([] :: [[Bool]])}
+\answer{[Result and type; distinguish this from part (c).]}
+\item \code{bundle [[True,False], [True]]}
+\answer{[All branches in order; whole type.]}
+\item \code{bundle [[id,not], [const False]]}
+\answer{[Function lists in order; then apply each returned function to True.]}
+\end{enumerate}
+
+\clearpage
+\task{4.2. Translate and trace}
+Rewrite the following without do notation, using binds and lambdas. Give each
+bound variable's type and the final result. Explain the effect of the middle line.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+do x <- Just (6 :: Int)
+   return (x+1)
+   return (x*3)
+\end{lstlisting}
+\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+-- YOUR TRANSLATION
+\end{codeanswer}
+\end{minipage}\par
+\answer{[Types, result, explanation.]}
+
+\task{4.3. Implement safe monadic computation}
+\code{safeQuot x y} returns \code{Nothing} for divisor zero and otherwise
+\code{Just (x `div` y)}. \code{divideChain} divides the starting value by each
+divisor left-to-right, failing on any zero; an empty divisor list succeeds with
+the starting value. Use explicit recursion for \code{divideChain}.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+safeQuot :: Int -> Int -> Maybe Int
+safeQuot = undefined  -- YOUR CODE
+
+divideChain :: Int -> [Int] -> Maybe Int
+divideChain = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+
+\task{4.4. List choices and a generic fold}
+Implement \code{allPairs} using list do notation, with left choices outermost.
+Implement \code{foldActions} as a monadic left fold using recursion and binds;
+do not use library folds, \code{mapM}, or \code{sequence}.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+allPairs :: [a] -> [b] -> [(a,b)]
+allPairs = undefined  -- YOUR CODE
+
+foldActions :: Monad m => (a -> b -> m a) -> a -> [b] -> m a
+foldActions = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+
+\task{4.5. Changed type question}
+Infer \code{\xs -> bundle (map Just xs)} and describe its behavior. Explain
+why its monad is more specific than the monad in \code{bundle}'s signature.
+\answer{[Most general type and behavior.]}

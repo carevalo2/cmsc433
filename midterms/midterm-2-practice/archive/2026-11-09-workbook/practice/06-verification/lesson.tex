@@ -1,0 +1,70 @@
+\chapter{Verification conditions}
+\source{Sample Q3, p. 3; DafnyVerificationConditions PDF, physical pp. 3--30.}
+These are written partial-correctness questions, not requests to run a verifier.
+State the induced formulas even if a proposed invariant is invalid. Distinguish
+deriving an obligation from proving it. Ignore termination and runtime-safety
+obligations in this practice set unless explicitly asked.
+
+\task{6.1. Assignment and sequence}
+Compute each weakest precondition. Show substitution, working backward.
+\begin{enumerate}[label=(\alph*)]
+\item \code{x := x + 3;} with postcondition $x\geq 10$.
+\answer{[Substitution and simplified precondition.]}
+\item \code{x := y + 2; y := x - 1;} with postcondition $x>y\land y\geq 0$.
+\answer{[Precondition before each assignment; simplified result.]}
+\item \code{x := x + y; y := x - y;} with postcondition $y=7$.
+\answer{[Show both substitutions. Assignments are sequential.]}
+\end{enumerate}
+
+\task{6.2. Conditional}
+Compute a weakest precondition for this code with postcondition $z\geq 0$.
+First write the guarded implications for both branches; then simplify if useful.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+if x < y {
+  z := y - x;
+} else {
+  z := x - y;
+}
+\end{lstlisting}
+\end{minipage}\par
+\answer{[Branch preconditions; guarded conjunction; simplification.]}
+
+\task{6.3. Derive all three loop obligations}
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+method TwicePlus(n:int) returns (t:int)
+  requires n > 0
+  ensures t == 2*n + 3
+{
+  t := 0;
+  var i := n;
+  while i > 0
+  {
+    t := t + 2;
+    i := i - 1;
+  }
+  t := t + 3;
+}
+\end{lstlisting}
+\end{minipage}\par
+For \textbf{each} proposed invariant below, list (1) initialization after
+substituting the initialization, (2) preservation after substituting the body,
+and (3) exit after accounting for the final assignment. Then state which
+obligations hold. For a failed implication, give a concrete counterexample
+satisfying its antecedent. A counterexample need not be a reachable loop state.
+
+\begin{enumerate}[label=(\alph*)]
+\item $i\geq 0\land t+2i=2n$.
+\answer{Initialization: [ ]. Preservation: [ ]. Exit: [ ]. Validity/counterexamples: [ ].}
+\item $i\geq 0\land t=2i$.
+\answer{Initialization: [ ]. Preservation: [ ]. Exit: [ ]. Validity/counterexamples: [ ].}
+\item $i\geq 0$.
+\answer{Initialization: [ ]. Preservation: [ ]. Exit: [ ]. Validity/counterexamples: [ ].}
+\end{enumerate}
+
+\task{6.4. Repair and transfer}
+Now change the body update to \code{t := t + 3} and the postcondition to
+$t=3n+3$, retaining the final \code{t := t + 3}. Propose an invariant and derive
+the three obligations. Include bounds you need at loop exit.
+\answer{Invariant: [ ]. Initialization: [ ]. Preservation: [ ]. Exit: [ ].}

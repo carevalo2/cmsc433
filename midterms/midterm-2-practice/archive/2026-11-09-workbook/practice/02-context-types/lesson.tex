@@ -1,0 +1,64 @@
+\chapter{Contextual and higher-order types}
+\source{Sample Q1, p. 1; Monads lecture, Functor/Applicative; State lecture.}
+For every part, give the most general type or identify a type error. All parts
+are independent. Reference signatures are provided in the appendix. Keep the
+outer context in your answer and show how the payload type changes.
+
+\task{2.1. Functor and Applicative}
+\begin{enumerate}[label=(\alph*)]
+\item \code{(,) <$> Just False}
+\answer{[Type of (,) after its first argument; whole type.]}
+\item \code{(++) <$> Just "ab"}
+\answer{[Type and reasoning.]}
+\item \code{(++) <$> Just "ab" <*> Just "cd"}
+\answer{[Type and reasoning.]}
+\item \code{Just not <*> Just (3 :: Int)}
+\answer{[Type or conflict.]}
+\item \code{\f mx -> f <$> mx}
+\answer{[Most general type and constraint.]}
+\item \code{\mf mx -> mf <*> mx}
+\answer{[Most general type and constraint.]}
+\item \code{\mx f -> mx >>= f}
+\answer{[Most general type and constraint.]}
+\end{enumerate}
+
+\task{2.2. State types}
+Use \code{get :: State s s}, \code{put :: s -> State s ()}, and
+\code{modify :: (s -> s) -> State s ()}. For each answer, explicitly separate
+the stored-state type from the returned-value type.
+\begin{enumerate}[label=(\alph*)]
+\item \code{get >>= \xs -> put (reverse xs)}
+\answer{[Stored type; returned type; whole type.]}
+\item \code{modify (map not)}
+\answer{[Stored type; returned type; whole type.]}
+\item \code{put 'r' >> put False}
+\answer{[Type or incompatible state requirements.]}
+\item \code{(,) <$> get}
+\answer{[Stored type; returned type; whole type.]}
+\item \code{\f -> f <$> get}
+\answer{[Type of f; whole type.]}
+\item \code{get >>= \x -> return (x, x + 2)}
+\answer{[Stored type; returned type; constraints; whole type.]}
+\end{enumerate}
+
+\task{2.3. Implement from contextual signatures}
+Use \code{<$>} and/or \code{<*>}; no pattern matching or do notation.
+\code{choosePairs} must enumerate each left choice before advancing to the next.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+applyAvailable :: Maybe (a -> b) -> Maybe a -> Maybe b
+applyAvailable = undefined  -- YOUR CODE
+
+pairAvailable :: Maybe a -> Maybe b -> Maybe (a,b)
+pairAvailable = undefined  -- YOUR CODE
+
+choosePairs :: [a] -> [b] -> [(a,b)]
+choosePairs = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+
+\task{2.4. Changed independent inference}
+Infer \code{\f -> modify f >> get}. Give the required relationship between the
+input and output types of \code{f}. Explain which action determines the returned
+type of the full computation.
+\answer{[Most general type and reasoning.]}

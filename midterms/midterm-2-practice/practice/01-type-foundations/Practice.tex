@@ -1,0 +1,32 @@
+\input{../../support/worksheet.tex}
+\begin{document}
+\sheettitle{01}{Type foundations}{Guided practice}
+
+\textbf{Use with the chat:} read the idea and example, then do Question 1 only.
+We discuss each attempt before continuing.
+
+\textbf{Idea.} Application matches an argument's type with a function's input.
+Keep lists, pairs, and constraints in your answer. Arrows group to the right;
+function application groups to the left.
+
+\textbf{Worked example.} In \code{\h x -> h (Just x)}, let \code{x :: a}.
+Then \code{Just x :: Maybe a}, so \code{h :: Maybe a -> b}.
+The whole type is \code{(Maybe a -> b) -> a -> b}.
+
+\task{1. Match the shapes}
+Infer \code{\g x -> g [x]}. Fill the ledger before writing the full type.
+\answer{x :: [ ]; [x] :: [ ]; g :: [ ]; result :: [ ]; whole lambda :: [ ].}
+
+\task{2. Keep the necessary constraint}
+Give the most general type of \code{\xs -> [even x | x <- xs]}.
+Show which operation introduces a constraint; do not default to \code{Int}.
+\answer{[Type and reasoning.]}
+
+\task{3. Diagnose a conflict}
+Give the most general type or explain why \code{\f -> (f True, f 'q')}
+is ill-typed. State the incompatible requirements on \code{f}.
+\answer{[Type or conflicting equations.]}
+
+\source{Sample Q1, p. 1; Monads/GenericMonads lecture signatures.}
+
+\end{document}

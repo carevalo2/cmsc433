@@ -1,0 +1,41 @@
+\input{../../support/worksheet.tex}
+\begin{document}
+\sheettitle{06}{Verification conditions}{Topic mock}
+
+\mockrules
+\textbf{Question.} For each proposed invariant, list the induced initialization,
+preservation, and exit verification conditions for this method. Write the
+substituted formulas even when the invariant is invalid. Include the post-loop
+assignment. This task asks for partial correctness, not termination.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+method ThreeTimes(n:int) returns (t:int)
+  requires n > 0
+  ensures t == 3*n + 2
+{
+  t := 0;
+  var i := n;
+  while i > 0 {
+    t := t + 3;
+    i := i - 1;
+  }
+  t := t + 2;
+}
+\end{lstlisting}
+\end{minipage}\par
+\begin{enumerate}[label=(\alph*)]
+\item $i\geq0\land t+3i=3n$.
+\answer{Initialization: [ ].}
+\answer{Preservation: [ ].}
+\answer{Exit: [ ].}
+\item $i\geq0\land t=3i$.
+\answer{Initialization: [ ].}
+\answer{Preservation: [ ].}
+\answer{Exit: [ ].}
+\item $i\geq0$.
+\answer{Initialization: [ ].}
+\answer{Preservation: [ ].}
+\answer{Exit: [ ].}
+\end{enumerate}
+
+\end{document}

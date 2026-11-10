@@ -193,6 +193,21 @@ After my attempt:
 - Do not modify workspace files unless I ask for file changes or saved progress.
   A request to explain, study, or review alone does not authorize edits.
 
+## Course-Specific Study Context
+
+### CMSC433
+
+- User-reported context (November 9, 2026): recent exams have become slightly
+  harder than the available past midterms. Prepare for more complex versions
+  of the same question types, rather than treating past-paper difficulty as
+  the ceiling. This is the user's observation, not a verified instructor rule.
+- Build foundations first, then increase complexity within the documented
+  question styles by combining concepts, nesting expressions, and requiring
+  fuller reasoning. Keep practice in manageable topic-sized parts.
+- This difficulty expectation does not establish new exam topics, question
+  counts, timing, allowed resources, or grading weights. Use current official
+  guidance for those details when available. Apply this context only to CMSC433.
+
 ## Style
 
 - Start directly; avoid filler and excessive praise.

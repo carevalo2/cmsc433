@@ -10,9 +10,18 @@ Work through one prompt at a time with the chat: predict, explain your reasoning
 then run or implement the example. These are learning exercises, not homework
 solutions or predictions of exam questions.
 
-## Current study handoff (November 4, 2026)
+## Current study handoff (November 10, 2026)
 
-**Resume at [ExceptT](transformers/03-except-t/README.md).** The pending refresher
+**Resume the [Midterm 2 topic sequence](../midterms/midterm-2-practice/HANDOFF.md).**
+Part 01 is completed and cross-checked; Part 02 guided work and its notebook mock
+have been attempted and the key reviewed. Some questions needed guidance; no
+independent score is established for Part 02. Continue from that review, then
+Part 03 when ready. The dated transformer notes below are earlier context.
+
+## Earlier transformer handoff (November 4, 2026)
+
+The previous stopping point was [ExceptT](transformers/03-except-t/README.md),
+not the active November 10 study route. The earlier pending refresher
 question is saved there; it has not been answered. Either and State-with-errors
 coding have been reviewed; ExceptT coding is not yet attempted. Transformer order
 is upcoming. Each numbered lesson directory now has a README with evidence,

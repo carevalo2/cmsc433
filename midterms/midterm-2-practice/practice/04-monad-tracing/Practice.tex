@@ -1,0 +1,36 @@
+\input{../../support/worksheet.tex}
+\begin{document}
+\sheettitle{04}{Monad tracing}{Guided practice}
+
+\textbf{Use with the chat:} predict one part before receiving feedback.
+
+\textbf{Idea.} Maybe bind propagates failure. List bind enumerates each earlier
+choice fully before advancing to the next. \code{return} does not exit a do block.
+
+\textbf{Worked example.} \code{do x <- [1,3 :: Int]; return (x+2)} yields
+\code{[3,5]}. There is one result per successful branch.
+
+Use this supplied collector:
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+gather :: Monad m => [m a] -> m [a]
+gather [] = return []
+gather (u:us) = do
+  x <- u
+  xs <- gather us
+  return (x:xs)
+\end{lstlisting}
+\end{minipage}\par
+\task{1. Maybe execution}
+Evaluate \code{gather [Just 'a', Nothing]}; give the whole result type.
+\answer{[Value, type, and where execution stops producing results.]}
+\task{2. Enumerate choices}
+Evaluate \code{gather [[True,False], [True,False]]}, in order.
+\answer{[One row per outer choice; final result.]}
+\task{3. Empty input versus empty action}
+Evaluate both \code{gather ([] :: [[Bool]])} and \code{gather [[] :: [Bool]]}.
+Explain why their results differ.
+\answer{[Both values and explanation.]}
+\source{Sample Q4, p. 4; Monads List Monad section; GenericMonads collector.}
+
+\end{document}

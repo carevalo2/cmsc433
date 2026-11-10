@@ -16,8 +16,18 @@
 *.nav
 *.snm
 *.vrb
+*.xdv
 # Generated worksheet PDFs (keep source exam and course PDFs)
 /midterms/midterm-practice/Q4-*.pdf
 .stack-work/
 .vscode
-.stack-work/
+dist-newstyle/
+# Haskell / Agda generated interfaces and objects
+*.hi
+*.o
+*.dyn_hi
+*.dyn_o
+*.hie
+*.agdai
+# Generated font discovery cache
+LOCAL_APPDATA_FONTCONFIG_CACHE/

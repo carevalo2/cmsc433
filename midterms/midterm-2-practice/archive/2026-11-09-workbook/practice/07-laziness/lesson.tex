@@ -1,0 +1,83 @@
+\chapter{Laziness and summary-producing recursion}
+\source{Sample Q5, p. 5 (helper structure); Dynamic lecture (laziness context).}
+Use this supplied helper. It is also available in the optional Haskell file.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+spreadMax :: [Int] -> Int -> (Int,[Int])
+spreadMax [] seed = (seed,[])
+spreadMax [x] seed = (x,[seed])
+spreadMax (x:xs) seed = (max x rest, seed:out)
+  where (rest,out) = spreadMax xs seed
+\end{lstlisting}
+\end{minipage}\par
+
+\task{7.1. Evaluate the helper}
+\begin{enumerate}[label=(\alph*)]
+\item \code{spreadMax [] 20}
+\answer{[Result.]}
+\item \code{spreadMax [4] 20}
+\answer{[Result.]}
+\item \code{spreadMax [4,1,7] 20}
+\answer{[Recursive intermediate pairs and final result.]}
+\item \code{spreadMax [-8,-3,-6] 0}
+\answer{[Result; does seed participate in the summary for nonempty input?]}
+\end{enumerate}
+
+\task{7.2. Explain the two outputs}
+For an arbitrary finite nonempty input, describe the first and second
+components. Which input determines the length of the output list? Which
+component can be computed without forcing the numeric seed? Justify from the
+equations rather than assuming that every argument is evaluated first.
+\answer{[Component meanings and dependency explanation.]}
+
+\task{7.3. Implement with two helper calls}
+Implement a function replacing every element by the maximum of the original
+list. Return \code{[]} on \code{[]}. Examples:
+\code{[4,1,7] -> [7,7,7]} and \code{[-8,-3] -> [-3,-3]}.
+Use exactly two calls to \code{spreadMax} for nonempty input and pair
+projections or let bindings. No explicit recursion, \code{maximum}, \code{map},
+\code{replicate}, folds, or other recursive list helpers.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+toMaximumTwoPass :: [Int] -> [Int]
+toMaximumTwoPass = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+
+\task{7.4. One-call challenge}
+Implement the same behavior with exactly one call to \code{spreadMax} for
+nonempty input, using a recursive let/where binding. The other restrictions
+remain. Handle the empty list explicitly.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+toMaximumOneCall :: [Int] -> [Int]
+toMaximumOneCall = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+\answer{[Draw or describe the dependencies. Why can the summary be determined?]}
+
+\task{7.5. Changed independent helper}
+Use the helper below to return a list with each position replaced by the sum of
+all input elements. Use one helper call, no other recursive list function, and
+handle the empty list explicitly.
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}
+spreadSum :: [Int] -> Int -> (Int,[Int])
+spreadSum [] seed = (0,[])
+spreadSum (x:xs) seed = (x+rest,seed:out)
+  where (rest,out) = spreadSum xs seed
+\end{lstlisting}
+\end{minipage}\par
+\par\noindent\begin{minipage}{\linewidth}
+\begin{codeanswer}
+toTotalOneCall :: [Int] -> [Int]
+toTotalOneCall = undefined  -- YOUR CODE
+\end{codeanswer}
+\end{minipage}\par
+\answer{[Explain why the changed base case matters. Predict output for [2,-1,4].]}
+
+\task{7.6. Productivity is a dependency question}
+Compare \code{let x = x + 1 in x} with
+\code{let xs = 1 : xs in take 3 xs}. Explain which finite observation can be
+produced and why. Do not conclude that every circular binding is safe.
+\answer{[Dependency reasoning and result where one exists.]}
