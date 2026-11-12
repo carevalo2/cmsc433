@@ -1,91 +1,141 @@
 # CMSC433 Assignment 5 learning handoff
 
-Saved November 8, 2026. This describes the current homework session, not exam preparation. Read the workspace `AGENTS.md` and reread the active source before continuing; the student may have edited it after this handoff.
+Updated November 9, 2026, replacing the November 8 stopping point. This is homework progress, not exam preparation. HW4 and HW5 build on HW3 and live in `homework-3`; do not assume this directory contains only HW3. Read the workspace `AGENTS.md` and reread the active source before continuing because the student may have edited it.
+
+## Current status and last work
+
+**The student completed `vcBlock` and method-level `vc` through guided implementation. Both are saved in [src/VCGen.hs](src/VCGen.hs). No `undefined` placeholders remain in that file.** The four supplied HUnit tests were executed by the assistant and passed.
+
+**The last work was a submission-readiness review, not another implementation step.** The student asked whether HW5 was ready to turn in. Additional probes confirmed that `vcStmt` misses verification conditions for loops inside `If` branches and inside other loop bodies. These cases have not been fixed. Do not declare the assignment fully ready merely because the four supplied tests pass.
+
+The student then requested this handoff update, highlighting their struggles and the last work. No assignment code was changed by the assistant, and nothing was submitted. Resume at the nested-loop/branch coverage issue, rather than restarting `vcBlock` or `vc`.
 
 ## Goal and teaching preferences
 
-The student is completing Assignment 5 in `homework-3/src/VCGen.hs`, building on the MiniDafny project from earlier assignments. They initially wanted an overview and prerequisites, then began implementing the assignment through guided practice.
+The student is completing Assignment 5's MiniDafny verification-condition generator. Their established request is **“guide me, dont give me the full answer.”** Continue as a tutor, not an autonomous assignment implementer. This save request authorizes documentation changes, not assignment-code changes.
 
-**Continue as a tutor, not as an autonomous assignment implementer.** The student explicitly requested: “guide me, dont give me the full answer.” Do not edit assignment code without a request. This request authorized creating this handoff document only.
-
-The strongest repeated preference is to explain the concrete situation and purpose before introducing the next expression. The student repeatedly became lost when the assistant introduced a new helper name, formula, or code fragment without grounding it in the current function.
+The strongest repeated need is **knowing the concrete situation and program location before discussing the next expression**. During this session the student repeatedly asked “where we're at,” “what situation are we in rn?”, and what a particular binding's job was. Correct arithmetic answers did not mean the relationship between functions was understood or retained.
 
 Use this sequence:
 
-1. Show a small MiniDafny program and what should hold afterward.
-2. Point to the exact program location currently being reasoned about: before the whole block, before an iteration, after a loop, or between statements.
-3. Explain the immediate question in plain language.
-4. Connect it to one existing function and its inputs/output.
-5. Show exactly where a single new line belongs in their current scaffold.
-6. Ask one small question and wait.
+1. Show a small MiniDafny example and the desired result.
+2. Locate the exact point: method entry, before a statement, between statements, before an iteration, or loop exit.
+3. Explain the immediate task in plain language.
+4. Identify the existing function, its inputs, and the kind of value it returns.
+5. Show the location of one new binding in the student's scaffold.
+6. Ask one small question and wait. When the student says “next,” advance rather than repeating the same check indefinitely.
 
-Avoid introducing several helper definitions at once. Helper names themselves are not the student's main concern; they explicitly clarified that the confusion concerns where we are logically and why the next step is needed. Abstract phrases such as “accepting a starting state” and “proposed checkpoint” required concrete explanations. Prefer actual values and execution steps.
+Avoid introducing several helper names at once. Explain the purpose before naming a new value. “Establish the condition” was clearer when restated as “make the condition true.” If confusion returns, stop adding code and use a forward execution trace with actual values. Do not rely only on repeated arithmetic exercises to assess conceptual understanding.
 
-If they are confused, stop advancing the implementation. Reteach using a smaller example. A correct arithmetic answer does not establish that they understand how `wp`, `vcStmt`, and `vcBlock` relate.
+Most implementation steps used substantial scaffolding or a corrected small case. Do not describe this as independent mastery. The student requested a save, so do not initiate an end-of-session quiz or lightning round as part of this update.
 
-The student requested this handoff to continue with another AI. Do not initiate an end-of-session quiz or lightning round as part of this save request.
+## What the student struggled with
 
-## Sources and assignment scope
+### Program locations and the middle boundary
 
-- Active instructions and examples are embedded in [src/VCGen.hs](src/VCGen.hs).
-- AST definitions are in [src/Syntax.hs](src/Syntax.hs).
-- Related course materials read during the session include `../lectures/hoare-logic/HoareLogic.dfy` and `../lectures/verification/Verification.dfy`.
-- No separate Assignment 5 handout or rubric was found in the workspace. Do not invent requirements or deadlines. The student said it was not due yet; no due date was established.
-- The starter excludes arrays and assertions from this project. Preserve its array-error cases.
-- The introduction to substitution contains reversed English wording about which expression replaces which variable. The intended rule is to replace occurrences of the assigned variable with the assigned expression in the postcondition.
-- For this assignment, `wp` of a loop returns its supplied invariant. Separate verification conditions justify its use; this is not automatic invariant discovery or a termination proof.
-
-## What is implemented in the saved source
-
-The assistant reread the entire `VCGen.hs` immediately before creating this document. The following reflects that saved file, not just code proposed in chat.
-
-### Expression and predicate substitution
-
-`Subst Expression` has cases for literals, ordinary variables, unary expressions, and binary expressions. Recursion keeps the same target name and replacement while visiting smaller subexpressions. A variable is replaced only when its name matches. The provided array case remains.
-
-`Subst Predicate` handles:
-
-- `PredOp`: recursively substitute in both predicates, preserving the operator.
-- `Forall bindings expression`: preserve the whole predicate when the target appears in `map fst bindings`; otherwise substitute in its expression and preserve the bindings.
-
-The bound-variable rule was taught through examples such as replacing program variable `x` in:
+The main difficulty was why a condition calculated **before `rest`** is called `afterFirst`, and why `first` must make it true. The useful example was:
 
 ```text
-x > 0 && (forall x :: x * x >= 0)
+x := 2;                 // first
+
+// Need x + 2 == 4 here: AFTER first and BEFORE rest.
+
+y := x + 2;             // rest
+
+// Want y == 4 here: p.
 ```
 
-Only the free occurrence on the left changes. The quantifier introduces its own `x` on the right. This was a guided explanation; do not assume independent mastery of variable scope.
+A helpful forward trace assumed `x` initially equaled `100`. The student correctly identified that after `x := 2`, the second assignment uses `x = 2`, not `100`. They then correctly identified that the requirement belongs when the second statement is about to run, rather than necessarily before the whole program starts.
 
-### Weakest preconditions
+This supports understanding of the location, but they did not independently give a sustained explanation of the whole pipeline. Reground that boundary if needed instead of assuming the earlier numerical answers resolved it.
 
-`WP Statement` is implemented for all non-array constructors:
+### What `wp` actually does
 
-- Assignment and declaration use `subst postCondition name expression`.
-- `If` calculates both branch requirements and constructs the conjunction of the two conditional obligations.
-- The current loop case is `wp (While invariant _ _) _ = invariant`.
+The student correctly calculated conditions such as `x + 2 == 4`, but later asked “what does wp do again.” Do not assume recall is stable.
 
-The `If` result represents:
+They eventually supplied this description with a sentence scaffold: `wp` gives **“the required condition beforehand.”** They also correctly recognized that calculating the requirement does not prove it holds for unknown starting values.
+
+They independently gave the counterexample `x = 3` to explain why an assumption `x >= 2` does not guarantee `y == 4` after `y := x + 2`.
+
+Use the input/output distinction:
 
 ```text
-(condition ==> thenRequirement)
-&&
-(!condition ==> elseRequirement)
+code + desired condition afterward
+                 ↓ wp
+       required condition beforehand
 ```
 
-`WP Block` is implemented recursively:
+For this assignment a loop's `wp` is its supplied invariant; separate conditions justify using that invariant. It is not automatic invariant discovery or a termination proof.
+
+### `vcStmt`, `firstChecks`, and recursion
+
+The student repeatedly asked what `vcStmt afterFirst first` returns and what `firstChecks` does. Explain that `vcStmt` constructs a **list of predicates to prove**, while `firstChecks` is a local variable storing that list. It is not the statement itself, a runtime value, a proof, or a Boolean success result.
+
+For the example loop below, the student correctly identified that `afterFirst` is used in the **exit check**, rather than the invariant-preservation check:
+
+```text
+while x < 2
+  invariant x <= 2
+{
+  x := x + 1;
+}
+y := x + 2;
+// Want y == 4.
+```
+
+The two loop claims are:
+
+```text
+(x <= 2 && x < 2) ==> x + 1 <= 2
+(x <= 2 && !(x < 2)) ==> x + 2 == 4
+```
+
+They correctly concluded that at exit the bounds force `x == 2`. Their explanations of preservation were more heavily guided; do not infer independent mastery of that obligation.
+
+They initially supplied only `vcStmt afterFirst` and did not know which statement to pass. Explain that the pattern `Block (first : rest)` already binds `first` to the entire first statement, including its full loop body when it is a loop. No reconstruction is needed.
+
+They correctly identified:
+
+- In two assignments, `first` is the first assignment.
+- `firstChecks` covers only the first loop in a block containing two loops.
+- If an assignment is followed by a loop, that loop's checks belong in `restChecks`.
+- The ending goal passed when collecting checks for `rest` is `p`.
+- The empty block yields `[]` because there is nothing to check and it is the base case.
+- The combination is `firstChecks ++ restChecks`.
+
+They needed an explanation of why to call `vcBlock` again: it collects checks for the smaller remaining block, whose first statement becomes `first` in that recursive call. In the current implementation an ordinary assignment contributes no extra loop checks; `firstChecks` for that assignment is `[]`, not the assignment itself.
+
+### Method-level `vc`, entry checks, and lists
+
+The student initially counted only two checks for a method with one loop, forgetting the additional method-entry check. After correction, they correctly said that a method with no loops still has its entry check.
+
+The method-level situation needed to be restated concretely:
+
+- `r = requires specs`: what may be assumed at method entry.
+- `e = ensures specs`: what must hold at method end.
+- `bodyRequirement = wp (Block ss) e`: what the body needs at entry to achieve `e`.
+- `entryCheck = PredOp r Implies bodyRequirement`: the claim connecting the allowed inputs to that requirement.
+- `loopChecks = vcBlock e (Block ss)`: the loop-related claims for the whole body, with `e` as its ending goal.
+
+They correctly supplied `e` for `wp`, wrote the entry implication, and chose `e` for `vcBlock` after further grounding.
+
+Their attempted final expression was:
 
 ```haskell
-instance WP Block where
-  wp (Block []) postCondition = postCondition
-  wp (Block (first : rest)) postCondition =
-    wp first (wp (Block rest) postCondition)
+in bodyRequirement ++ entryCheck ++ loopChecks
 ```
 
-The starter suggests folds but does not explicitly require them in the available instructions. Do not replace the student's working recursion merely to follow the hint.
+The correction was that `bodyRequirement` and `entryCheck` are individual predicates, whereas `loopChecks` is a list. `bodyRequirement` is already used inside the entry implication and is not a separate check to return. The correct return expression is:
 
-### Verification conditions for one statement
+```haskell
+in [entryCheck] ++ loopChecks
+```
 
-The saved implementation is:
+Their latest conceptual answer was that the method's requirement needs to imply `bodyRequirement`; clarify specifically that this is `r`, the method's `requires`. This was accepted as correct, but the full solution still followed guided steps.
+
+## Saved implementation
+
+The current `vcStmt` is unchanged from the previous handoff:
 
 ```haskell
 vcStmt :: Predicate -> Statement -> [Predicate]
@@ -99,144 +149,102 @@ vcStmt p (While invariant condition body) =
 vcStmt _ _ = []
 ```
 
-These claims represent:
-
-```text
-(invariant && condition) ==> wp body invariant
-(invariant && !condition) ==> p
-```
-
-The first check concerns preserving the invariant after one iteration. The second concerns satisfying the required continuation after exit. The function constructs predicates; it does not prove them or execute the program.
-
-The student initially retained both the starter loop equation returning `undefined` and their new loop equation. We removed the duplicate conceptually: the earlier catch-all `While` equation would shadow their implementation. The saved file now has only the implemented loop case and the fallback.
-
-### Incomplete parts
-
-The saved `vcBlock` is exactly:
+The newly completed functions are saved as:
 
 ```haskell
 vcBlock :: Predicate -> Block -> [Predicate]
 vcBlock p (Block []) = []
 vcBlock p (Block (first : rest)) =
   let afterFirst = wp (Block rest) p
-  in undefined
+      firstChecks = vcStmt afterFirst first
+      restChecks = vcBlock p (Block rest)
+  in firstChecks ++ restChecks
+
+vc :: Method -> [Predicate]
+vc (Method _ _ _ specs (Block ss)) =
+  let e = ensures specs
+      r = requires specs
+      bodyRequirement = wp (Block ss) e
+      entryCheck = PredOp r Implies bodyRequirement
+      loopChecks = vcBlock e (Block ss)
+  in [entryCheck] ++ loopChecks
 ```
 
-There is a harmless blank line inside the saved `let` layout. The nonempty case remains unfinished. An earlier uppercase `P` typo was corrected in the saved file.
+The supplied `requires` and `ensures` helpers remain unchanged.
 
-`vc :: Method -> [Predicate]` is still the starter implementation with `e = ensures specs`, `r = requires specs`, and `undefined` as the result. The supplied `requires` and `ensures` helpers have not been changed.
+Previously completed work remains:
 
-The current `vcStmt` fallback does not traverse nested `If` blocks or loop bodies for further loop obligations. No nested-loop/branch extension was implemented or established as a requirement in this session. Consult the governing assignment materials before expanding scope or claiming comprehensive verification.
+- Expression substitution for literals, ordinary variables, unary operators, and binary operators; array-error cases are preserved.
+- Predicate substitution through `PredOp`; for `Forall`, substitution is skipped when the target name is bound, otherwise it recurses into the expression.
+- `WP Statement` for assignment, declaration, `If`, and `While`.
+- `WP Block` with the working recursion `wp first (wp (Block rest) postCondition)` and the empty-block base case. Do not replace it with a fold merely because the starter suggests folds.
 
-## Exact stopping point and how to resume
+Earlier learning observations worth retaining: bound-variable scope, constructor versus parameter names (`Name` versus `name`), the polymorphic result of `subst`, constructor argument order (`PredOp left operator right`), unary negation (`Op1 Not condition`), wrapping statement lists as `Block`, and using `Forall [] expression` as a predicate all required support. The student previously performed substitution in both occurrences of `y` in `y * (x + y)` correctly, but variable-scope mastery was not independently established.
 
-We are working on **the nonempty `vcBlock` case**, not on `WP Block` anymore.
+## Exact stopping point: submission review found missing traversal
 
-The immediate goal is to use the already calculated `afterFirst` when generating verification conditions for `first`. The last assistant prompt offered this scaffold:
+The completed `vcBlock` walks the statements directly in its input block, and `vc` combines the entry check with the resulting list. The remaining issue is **`vcStmt` does not descend into compound statements to collect further loop obligations**:
+
+- An `If` reaches `vcStmt _ _ = []`, so loops in either branch are skipped.
+- The `While` case returns only that loop's own two checks; it never collects checks for loops nested in its body.
+
+The assistant confirmed the behavior with additional GHCi probes using supplied `wSquareWhile`:
 
 ```haskell
-vcBlock p (Block (first : rest)) =
-  let afterFirst = wp (Block rest) p
-      firstChecks = vcStmt ___ ___
-  in undefined
+length (vcBlock (Forall [] wWhilePost)
+  (Block [If (Val (BoolVal True)) (Block [wSquareWhile]) (Block [])]))
+-- Observed: 0; the branch's loop would contribute 2 checks.
+
+length (vcStmt (Forall [] wWhilePost)
+  (While (Forall [] wInv) (Val (BoolVal True)) (Block [wSquareWhile])))
+-- Observed: 2; collecting both loops' checks would give 4.
 ```
 
-The prompt reminded the student of the order:
+These probes count constructed obligations; they do not prove the example programs correct. They were run interactively and were not added as permanent tests.
 
-```haskell
-vcStmt requiredConditionAfterward statement
+The source instructions say “each while loop in a program introduces two additional verification conditions.” On that available wording, the assistant recommended addressing this gap before submission. No separate handout/rubric was found, so official grading scope and submission format remain unverified. Do not invent hidden-test expectations or claim that an external instructor requirement was checked.
+
+**Suggested next tutoring step:** ground a tiny `If` containing a loop, explain why its branch is itself a block to inspect, then guide one `vcStmt` case at a time. An `If` case must appear before the wildcard fallback. Subsequently address loop bodies using the invariant as the condition wanted after an iteration. Do not paste a full extension or silently edit code. Add focused regression coverage when making the change, preserve supplied-test ordering, and rerun the existing tests.
+
+Earlier teaching described `vcBlock` as collecting all loop checks without sufficiently qualifying the missing compound-statement traversal. Correct that description explicitly if it causes confusion: the intended goal is whole-block coverage, but the saved implementation currently misses the cases above.
+
+## Verification and environment
+
+This continuation ran on the student's Mac in `/Users/chris/cmsc433-1`. `stack`, `ghci`, `ghc`, and `cabal` are available under `/Users/chris/.ghcup/bin/`. Do not assume the earlier Windows PATH issue applies to this Mac session.
+
+From `homework-3`, the assistant actually executed:
+
+```sh
+stack ghci src/VCGen.hs --ghci-options '-e "runTestTT (TestList [test_substExp, test_substPred, test_vcStmt, test_vc_method])"'
 ```
 
-It asked which names fill the blanks when generating checks for `first`, with `afterFirst` as its required result. **The student has not attempted that prompt yet, and `firstChecks` is not in the saved source.** Do not assume this step is understood or paste a completed `vcBlock` solution.
+Result: **Cases: 4, Tried: 4, Errors: 0, Failures: 0.** This includes the end-to-end `Square` method test. The older handoff's student-reported-only test status is superseded by this executed result. Passing these tests does not establish comprehensive coverage, as the additional traversal probes demonstrated.
 
-After that step is understood, the remaining conceptual work is to collect checks from the remaining statements and combine the lists in the required order. Then teach the method-level `vc` stage from its comments and run the provided end-to-end test. Introduce each step separately, with its purpose and exact code location.
+Stack emitted a Cabal indentation warning at line 31 and a warning that the file target belongs to both the library and executable; it selected the library. These did not prevent the run. No Cabal configuration was changed. A separate full executable build was not performed.
 
-## Main unresolved conceptual issue
+The project uses resolver `lts-22.24`, `GHC2021`, and HUnit values run through GHCi; there is no dedicated Cabal test-suite stanza. For interactive work:
 
-The student is still uncertain about the middle boundary between `first` and `rest`, and about the different outputs of `wp` and `vcStmt`.
-
-Use this example again if needed:
-
-```dafny
-x := 3;                 // first
-
-// Need x + 1 == 4 here. This is after first and before rest.
-
-y := x + 1;             // rest contains this assignment
-
-// Want y == 4 here. This is p.
-```
-
-`wp (Block rest) p` calculates the middle requirement. The first statement must establish it; the remaining statements use it to reach the final requirement.
-
-Observed responses:
-
-- The student correctly identified the middle formula as `x + 1 == 4`.
-- When asked which statement must establish that middle condition, they incorrectly answered “the assignment after the middle.” This was corrected by walking forward through execution.
-- With the changed example `x := 2; y := x + 1;` and desired `y == 4`, they correctly answered that `y` actually becomes `3`. This was their latest practice response before requesting the handoff.
-- They have not yet independently explained why the first statement is responsible for the middle condition. Do not treat this gap as resolved.
-
-The larger motivating example used a loop as `first`, followed by `y := x + 1`, with final condition `y == 4`. The loop's exit condition must establish `x + 1 == 4`, since the assignment still has to run afterward.
-
-## Other learning observations
-
-The student can perform small substitutions and backward calculations, including changed examples. They independently replaced both occurrences of `y` in `y * (x + y)` with `z + 1`, obtaining `(z + 1) * (x + (z + 1))`.
-
-Areas requiring support during the session:
-
-- Pattern matching introduces local parameter names; names such as `name`, `replacement`, and `thenRequirement` are not automatically predefined by the starter.
-- `Name` is a constructor, while lowercase `name` is a parameter containing a string.
-- `subst :: a -> Name -> Expression -> a` returns the type of its first argument, not always an expression.
-- Constructor argument order: `PredOp leftPredicate operator rightPredicate`.
-- Unary negation: `Op1 Not condition`, not `Not condition` or `Op1 (Not condition)`.
-- `rest` is a list of statements; wrap it as `Block rest` for the `WP Block` instance.
-- `Forall [] expression` introduces no bound variables and allows the expression to be used as a predicate.
-- Guard versus invariant: the guard selects another iteration; the invariant must remain true at the loop head and at exit.
-- For preservation, the body's desired result is the invariant, not the final loop postcondition. The preservation implication's consequent is the body's precondition, not simply the invariant again.
-- Logical implication needed concrete examples, including why the unselected branch's implication is satisfied automatically.
-
-Most implementations were completed with substantial hints or after seeing a small corrected case. Avoid claiming independent mastery or starting with a large new problem.
-
-## Test status and Windows environment
-
-The student **reported that `runTestTT test_vcStmt` passed**, replying “yep works.” No test transcript was supplied. This is a student-reported success for the supplied `Square` loop test, not an assistant-executed test or full assignment validation.
-
-The two substitution tests were suggested earlier, but their success was not explicitly reported. No separate comprehensive `wp` checks, completed `vcBlock` checks, or method-level tests have been established. The assistant did not execute Haskell behavior tests during this session.
-
-PowerShell initially could not find `stack`. The assistant found and successfully ran:
-
-```powershell
-& 'C:\ghcup\bin\stack.exe' --version
-```
-
-It reported Stack 3.11.1. The executable exists locally; it was absent from the terminal's PATH. The student said earlier successful work on `Eval.hs` was on their Mac, though they believed Stack had worked on this Windows PC too.
-
-From `homework-3`, the suggested direct launch command is:
-
-```powershell
-& 'C:\ghcup\bin\stack.exe' ghci src/VCGen.hs
-```
-
-Alternatively, the following adds Stack to PATH for the current PowerShell session only:
-
-```powershell
-$env:Path = "C:\ghcup\bin;$env:Path"
+```sh
 stack ghci src/VCGen.hs
 ```
 
-No permanent PATH modification was made by the assistant. Do not assume a new terminal inherits that temporary setting. WSL inventory showed only Docker Desktop; do not assume an Ubuntu Haskell environment is available.
-
-In GHCi, after saving source edits:
+Then, after saving edits:
 
 ```haskell
 :reload
 import Test.HUnit
-runTestTT (TestList [test_substExp, test_substPred])
-runTestTT test_vcStmt
+runTestTT (TestList [test_substExp, test_substPred, test_vcStmt, test_vc_method])
 ```
 
-After the remaining implementation is complete, the provided end-to-end test is `runTestTT test_vc_method`. The Cabal file has no dedicated test-suite stanza, so the established workflow is running HUnit values in GHCi. The project uses `stack.yaml` resolver `lts-22.24` and Cabal's `GHC2021` default language.
+Historical Windows note: on the prior PC, Stack 3.11.1 existed at `C:\ghcup\bin\stack.exe` but was not on PowerShell's PATH. Launching it by its full path worked. Only a temporary PATH adjustment was suggested; no permanent PATH change was made. Retain this for a return to that PC, not as the current environment description.
 
-## Workspace preservation
+## Course sources and preservation
 
-At save time, Git showed a modification to `homework-3/src/VCGen.hs` and an unrelated untracked `lectures/03-trees/` directory. Preserve both. This session's assignment edits were made by the student in the IDE; the assistant only read the source and created this handoff document. No assignment was submitted.
+- Active assignment instructions and examples: [src/VCGen.hs](src/VCGen.hs).
+- AST definitions: [src/Syntax.hs](src/Syntax.hs).
+- Earlier session course references: [HoareLogic.dfy](../lectures/hoare-logic/HoareLogic.dfy) and [Verification.dfy](../lectures/verification/Verification.dfy). These were recorded as read in the previous handoff, not newly reread during this continuation.
+- No separate Assignment 5 handout, rubric, deadline, allowed-resource policy, or submission-format instructions were verified in this continuation. Follow documented course rules if supplied.
+- Arrays and assertions are excluded by the starter. Preserve the existing array-error cases.
+- The substitution introduction has reversed English wording about what replaces what; use the intended assignment rule: replace the assigned variable with the assigned expression in the postcondition.
+
+The working tree was clean immediately before this documentation update. The completed student source was already saved. This update changes only this handoff; preserve any later user changes. No commit, push, or assignment submission was performed by the assistant. The assignment remains pending the traversal issue and verification of any external submission requirements.
