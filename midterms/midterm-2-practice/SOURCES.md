@@ -1,5 +1,7 @@
 # Sources for the topic sequence
 
+This records the source mapping for the archived seven-topic sequence. The [daily practice guide](practice/README.md) maps the current lessons to the recording and lecture materials.
+
 The verified reference is `data/Midterm 2 Example - 2025.pdf`, titled CMSC 433:
 Midterm Exam 2 (Spring 2025). Its five physical pages contain Q1-Q5, respectively.
 Each original question is worth 20 points. That does not establish Fall 2026

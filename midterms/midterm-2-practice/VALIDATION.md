@@ -1,5 +1,7 @@
 # Validation: topic-sized revision (November 9, 2026)
 
+This record covers the archived seven-topic revision. The [daily practice guide](practice/README.md) is the current entry point.
+
 - Seven active topic folders, each with one guided Practice file and one Mock.
 - Written parts 01, 02, 04, and 06 each have separate editable LaTeX sources and
   compiled PDFs. Each of the eight PDFs is exactly one page before answers expand.

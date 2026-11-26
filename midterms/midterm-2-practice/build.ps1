@@ -11,7 +11,8 @@ if (Test-Path -LiteralPath $portable) {
     $fontConfig = Join-Path $root '.tools\fonts.conf'
     if (Test-Path -LiteralPath $fontConfig) { $env:FONTCONFIG_FILE = $fontConfig }
 }
-$folders = @(Get-ChildItem -LiteralPath (Join-Path $root 'practice') -Directory |
+$archive = Join-Path $root 'archive/2026-11-23-topic-practice/practice'
+$folders = @(Get-ChildItem -LiteralPath $archive -Directory |
     Where-Object { $_.Name -like "$Part*" })
 if ($folders.Count -eq 0) { throw "No practice folder matches '$Part'." }
 $count = 0
@@ -37,4 +38,4 @@ foreach ($folder in $folders) {
         } finally { Pop-Location }
     }
 }
-Write-Output "Built $count worksheet PDF(s). Coding parts use .hs files directly."
+Write-Output "Built $count archived worksheet PDF(s). The current daily practice uses Haskell and Markdown files directly."
