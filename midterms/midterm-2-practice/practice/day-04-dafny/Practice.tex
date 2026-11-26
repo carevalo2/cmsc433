@@ -1,0 +1,163 @@
+% Compile with pdflatex Practice.tex from this directory.
+% To use the cached Windows compiler, run these lines from the repository root:
+% $practiceRoot = (Resolve-Path '.\midterms\midterm-2-practice').Path
+% $day4 = Join-Path $practiceRoot 'practice/day-04-dafny'
+% $env:TECTONIC_CACHE_DIR = Join-Path $practiceRoot '.tools/cache'
+% $env:FONTCONFIG_FILE = Join-Path $practiceRoot '.tools/fonts.conf'
+% & "$practiceRoot\.tools\tectonic.exe" --only-cached --untrusted --outdir $day4 "$day4\Practice.tex"
+\documentclass[11pt,letterpaper]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,xcolor,listings,hyperref}
+
+\hypersetup{pdftitle={CMSC433 Day 4 - Dafny verification conditions},
+  pdfsubject={Guided practice in weakest preconditions and loop obligations}}
+\definecolor{ink}{HTML}{172E3B}
+\definecolor{accent}{HTML}{1E586B}
+\definecolor{paper}{HTML}{F5F8FA}
+\definecolor{line}{HTML}{718693}
+\color{ink}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.38em}
+\raggedbottom
+
+\lstset{basicstyle=\small\ttfamily,columns=fullflexible,keepspaces=true,
+  showstringspaces=false,backgroundcolor=\color{paper},frame=single,
+  rulecolor=\color{line},framesep=6pt,xleftmargin=7pt,xrightmargin=7pt,
+  aboveskip=0.65em,belowskip=0.65em}
+
+\newcommand{\question}[2]{%
+  \par{\Large\bfseries\color{accent}#1\enspace #2}\par\smallskip}
+
+% Each \answer takes a field ID, a label, a PDF field height, and your answer.
+% To edit the LaTeX, type in the final braces. An empty answer becomes a
+% fillable field. A written answer is typeset as part of the page on rebuild.
+% Use \(...\) for math and change the height if you want more PDF writing space.
+\renewcommand*{\LayoutTextField}[2]{#1#2}
+\newcommand{\answer}[4]{%
+  \par\smallskip\noindent\textbf{#2}\par\nobreak\noindent
+  \if\relax\detokenize{#4}\relax
+    % Draw the field's outline on the page for print and PDF previews.
+    \rlap{\setlength{\fboxsep}{0pt}%
+      \raisebox{\fboxrule}[0pt][0pt]{\fcolorbox{line}{paper}{%
+        \rule{0pt}{\dimexpr#3-2\fboxrule\relax}%
+        \rule{\dimexpr\linewidth-2\fboxrule\relax}{0pt}}}}%
+    \TextField[name={#1},multiline=true,width=\linewidth,height=#3,
+      charsize=11pt,borderwidth=1,bordercolor={0.44 0.53 0.58},
+      backgroundcolor={0.96 0.97 0.98}]{}%
+  \else
+    \fcolorbox{line}{paper}{%
+      \parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{#4}}%
+  \fi
+  \par}
+
+\begin{document}
+\begin{Form}
+
+{\large\bfseries\color{accent} CMSC433 / Day 4}\par
+{\LARGE\bfseries Dafny verification conditions}\par\smallskip
+Work one step at a time. Type in the PDF fields or put your answers in the
+final braces of each \texttt{\string\answer} in the LaTeX source.
+Use partial correctness throughout.
+
+\subsection*{Worked example}
+To get \(x\geq 4\) after \texttt{x := x - 2}, you need \(x-2\geq 4\)
+before the assignment. Replace the assigned variable in the target with the
+right-hand side of the assignment. For a sequence, start with the last
+statement and work backward.
+
+\smallskip
+{\small
+\renewcommand{\arraystretch}{1.23}
+\begin{tabular}{@{}p{.20\linewidth}p{.34\linewidth}p{.39\linewidth}@{}}
+\textbf{Loop obligation} & \textbf{Assumptions} & \textbf{Condition to establish}\\
+\hline
+Initialization & Method precondition & Invariant after the prefix\\
+Preservation & Invariant and true guard & Invariant after one body execution\\
+Exit & Invariant and false guard & Method postcondition after the suffix\\
+\end{tabular}\par}
+\medskip
+
+\question{4.1}{Weakest precondition}
+Work backward through these assignments. Keep each substitution visible.
+
+\begin{lstlisting}
+x := y + 2;
+y := x - 1;
+// Target: x > y && y >= 0
+\end{lstlisting}
+
+\answer{q41-before-second}{Before the second assignment}{0.9in}{x > (x - 1) and (x - 1) >= 0}
+\answer{q41-before-first}{Before the first assignment}{0.9in}{(y + 2) > ((y + 2) - 1) and ((y + 2) - 1) >= 0}
+
+\medskip
+{\small Course review 27:47--38:06, Dafny verification lecture, and
+Spring 2025 sample exam Question 3.}\par
+
+\clearpage
+\question{4.2}{Initialization, preservation, and exit}
+Use the invariant \(I\equiv i\geq 0\land t+3i=3n\).
+Derive one implication at a time. Use the method precondition in the
+initialization implication and account for the suffix in the exit implication.
+
+\begin{lstlisting}
+method CountByThree(n: int) returns (t: int)
+  requires n >= 0
+  ensures t == 3*n + 2
+{
+  t := 0;
+  var i := n;
+  while i > 0 {
+    t := t + 3;
+    i := i - 1;
+  }
+  t := t + 2;
+}
+\end{lstlisting}
+
+\answer{q42-initialization}{Initialization implication}{0.95in}{}
+\answer{q42-preservation}{Preservation implication}{0.95in}{}
+\answer{q42-exit}{Exit implication}{0.95in}{}
+
+\clearpage
+\question{4.3}{Compare proposed invariants}
+Use the \texttt{CountByThree} program from 4.2. For each candidate, derive all
+three implications. Identify each failed implication and give concrete values
+that make its left-hand side true and its right-hand side false.
+
+\medskip
+{\bfseries\color{accent} Candidate A}\quad \(i\geq 0\land t=0\)\par
+\answer{q43-a-initialization}{Initialization implication}{0.52in}{}
+\answer{q43-a-preservation}{Preservation implication}{0.52in}{}
+\answer{q43-a-exit}{Exit implication}{0.52in}{}
+\answer{q43-a-counterexamples}{Failed implications and counterexamples}{0.65in}{}
+
+\medskip
+{\bfseries\color{accent} Candidate B}\quad \(t+3i=3n\)\par
+\answer{q43-b-initialization}{Initialization implication}{0.52in}{}
+\answer{q43-b-preservation}{Preservation implication}{0.52in}{}
+\answer{q43-b-exit}{Exit implication}{0.52in}{}
+\answer{q43-b-counterexamples}{Failed implications and counterexamples}{0.65in}{}
+
+\clearpage
+\question{4.4}{Transfer}
+Use the original invariant \(I\equiv i\geq 0\land t+3i=3n\) from 4.2.
+Replace the suffix and postcondition with the following.
+
+\begin{lstlisting}
+t := 2*t;
+t := t + 1;
+// Target: t == 6*n + 1
+\end{lstlisting}
+
+Derive the new exit implication and show both substitutions. Explain why
+initialization and preservation stay the same.
+
+\answer{q44-before-last}{Before the last assignment in the suffix}{0.8in}{}
+\answer{q44-before-first}{Before the first assignment in the suffix}{0.8in}{}
+\answer{q44-exit}{New exit implication}{0.9in}{}
+\answer{q44-explanation}{Why initialization and preservation stay the same}{1.15in}{}
+
+\end{Form}
+\end{document}

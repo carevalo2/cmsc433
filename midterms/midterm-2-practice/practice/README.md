@@ -14,7 +14,9 @@ This command loads Day 1 in GHCi from the repository root. Change the day folder
 ghci -imidterms/midterm-2-practice/support midterms/midterm-2-practice/practice/day-01-foundations/Practice.hs
 ```
 
-Use `:t` or evaluate the expression after predicting. After editing, use `:reload` and run the named `check...` expression for the function you attempted. Day 4 is written. Day 8 is an independent mixed set, so save your answers before checking them.
+Use `:t` or evaluate the expression after predicting. After editing, use `:reload` and run the named `check...` expression for the function you attempted. Day 8 is an independent mixed set, so save your answers before checking them.
+
+For Day 4, type in the fillable PDF or edit the last pair of braces in each `\answer` command in the LaTeX source. The LaTeX header contains the rebuild commands. [Day 4 PDF](day-04-dafny/Practice.pdf) · [LaTeX](day-04-dafny/Practice.tex) · [Markdown](day-04-dafny/Practice.md)
 
 ## Daily lessons
 
@@ -23,7 +25,7 @@ Use `:t` or evaluate the expression after predicting. After editing, use `:reloa
 | **1 · Mon Nov 23** | [Haskell foundations](day-01-foundations/Practice.hs) | Read lambdas and comprehensions, trace nested generators, infer the type of a partially applied constructor, and implement a filter. | 0:55–4:27, 9:51–11:44 |
 | **2 · Tue Nov 24** | [Higher-order types and State](day-02-state/Practice.hs) | Infer function-valued actions, implement reads and updates, and trace actions under bind and applicative sequencing. | 9:51–17:30, 22:34–25:53, 51:20–54:45 |
 | **3 · Wed Nov 25** | [Lazy helpers and recursive bindings](day-03-laziness/Practice.hs) | Trace both tuple fields, write two-call and one-call implementations, and explain when a seed is forced. | 58:47–1:11:44 |
-| **4 · Thu Nov 26** | [Dafny verification conditions](day-04-dafny/Practice.md) | Work backward through assignments, derive all three loop obligations, and compare proposed invariants with counterexamples. | 27:47–38:06 |
+| **4 · Thu Nov 26** | [Dafny verification conditions](day-04-dafny/Practice.pdf) | Work backward through assignments, derive all three loop obligations, and compare proposed invariants with counterexamples. | 27:47–38:06 |
 | **5 · Fri Nov 27** | [Implement from polymorphic signatures](day-05-types-to-code/Practice.hs) | Implement collection, traversal, and monadic composition. Use types to explain what you can construct. | 17:30–27:47 |
 | **6 · Sat Nov 28** | [Trace monadic outputs](day-06-monad-tracing/Practice.hs) | Trace `Maybe`, lists, and `State`, then rewrite collection using `mapM`. Explain which context controls nested failure. | 38:06–58:47 |
 | **7 · Sun Nov 29** | [Short types and outputs](day-07-short-types/Practice.hs) | Practice most-general types, identify ill-typed expressions, compare applicative contexts, and implement a comprehension. | 0:55–17:30 |

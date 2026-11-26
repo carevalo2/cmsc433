@@ -1,10 +1,16 @@
 # CMSC433 Midterm 2 study handoff
 
-## Resume here · November 25, 2026
+## Resume here · November 26, 2026
 
-- **Active route:** [nine-day practice sequence](practice/README.md). Days 1 and 2 were completed in chat on November 24. Day 3 was worked through across November 24–25. The user asked to stop after identifying the lesson as lazy evaluation. Days 4–9 are unstarted in this sequence. The plan assumes a December 2 exam.
-- **Next lesson:** [Day 4, Q4.1 · weakest preconditions](practice/day-04-dafny/Practice.md). Start with one concrete assignment and a postcondition, then ask only for the formula immediately before the **last** assignment in 4.1. Wait for their attempt before moving back to the first assignment or to loops. Use the TA recording at 27:47–38:06 and the assignment and sequence sections of the [Dafny lecture](../../lectures/midterm-2/DafnyVerificationConditions.pdf). Q4.2 then separates initialization, preservation, and exit, including the assignment after the loop.
-- **Optional first check:** Spend two or three minutes on one fresh lazy-evaluation output prediction, with reasoning about what the final expression demands. If they want to move straight to Dafny, save that check for mixed review. There is no pending question to repeat.
+- **Active route.** [Nine-day practice sequence](practice/README.md). Days 1–3 were worked through in chat on November 24–25. On November 26, the user completed Day 4, Q4.1 on weakest preconditions. The plan assumes a December 2 exam.
+- **Next lesson.** Open [Day 4, Q4.2](practice/day-04-dafny/Practice.pdf#page=2) and start with **initialization only**. In `CountByThree`, show the method's `requires`, the assignments before the loop, and the point where the given invariant must first hold. Have the user derive that one implication before moving to preservation and exit. For exit, include the suffix `t := t + 2`. Use the TA review at 27:47–38:06 and the [Dafny verification lecture](../../lectures/midterm-2/DafnyVerificationConditions.pdf).
+- **After Q4.2.** Q4.3 compares two proposed invariants and asks for counterexamples to failed obligations. Q4.4 changes the suffix and postcondition and asks for a new exit implication. Days 5–9 are still ahead in the active sequence. They cover code from types, monadic tracing, short type questions, mixed practice, and recall.
+
+## Day 4 worksheet and setup
+
+- Use [Practice.tex](practice/day-04-dafny/Practice.tex) to edit answers and [Practice.pdf](practice/day-04-dafny/Practice.pdf) to follow the worksheet. Each `\answer` takes the student's text in its last pair of braces. An empty answer becomes a fillable PDF field. The [original Markdown prompts](practice/day-04-dafny/Practice.md) are also available.
+- Both Q4.1 substitutions are saved in the LaTeX. The rebuilt four-page PDF shows both answers and has 15 fillable fields for the remaining questions. In discussion, the whole-sequence condition simplified to `y >= -1`.
+- In the Windows VS Code workspace, Ctrl+S now rebuilds the PDF with the cached Tectonic recipe. The `.vscode/settings.json` recipe is local and Git-ignored. Manual rebuild commands are in the LaTeX header. Save a separate PDF copy for answers entered directly into PDF fields.
 
 ## Current learning evidence
 
@@ -13,12 +19,17 @@
 | [Day 1 · Foundations](practice/day-01-foundations/Practice.hs) | Correctly inferred `[Bool] -> [Bool]` and `(Maybe a -> b) -> a -> [b]`, wrote a correct `keepFalse`, and gave the right result and type after applying a wrapped pair constructor. | Initially wrote a type with `Just` where `Maybe` belongs. Initially paired two comprehension generators as if zipped. After tracing a fixed `x` through every `y`, got the ordered result right. |
 | [Day 2 · State](practice/day-02-state/Practice.hs) | Wrote correct `lessThanSaved`, `beforeAndAfter`, and `updateSecond` in chat. Got a shorter `sequence` trace right after feedback and derived the changed `reverse`/`<*>` type with scaffolding. | Needed help keeping the remaining arrow in a function-valued result, distinguishing `put value` from `modify function`, and separating the action's return value from the final stored state. Initially returned only the last `sequence` result and omitted the outer `runState` pair on the applicative example. The original `Num s` derivation was worked by the assistant. |
 | [Day 3 · Laziness](practice/day-03-laziness/Practice.hs) | Correctly traced the sum and repeated seed once their roles were separated. After a restart, independently predicted a fresh helper pair and selected the filled list with `snd`. Explained that the sum uses only the input list and chose `total` as the seed in the guided one-call binding. Correctly predicted `10` for a productive recursive binding and an error when `sum` demands undefined seed values. | Two-call implementation was shown after hints. The one-call implementation was reproduced with scaffolding. On initial output attempts, the user gave the sum instead of `filled`, expected `fst` and `length` to force an undefined seed, and expected a cycle inside list elements to block `length`. The recorded minimum helper's empty and singleton cases were walked through with substantial help. Treat all of these as retention targets. |
+| [Day 4 · Dafny](practice/day-04-dafny/Practice.md) | After one worked example, gave the correct substitutions before both assignments in Q4.1. Identified `-1` as the minimum starting value after the simplification was scaffolded. | Apply the same backward substitution to the loop prefix, body, and suffix. Name the exact location of each assertion before manipulating the formula. |
+
+### Related Haskell review
+
+Before switching to the current checkout, we worked through the archived Part 03 material in chat. This covered `collectMaybe`, `walkM`, `composeM`, and the mock's `collectEither`, `mapM id`, and `Identity Empty` counterexample. The user needed guidance on the payload bound by `<-`, the difference between passing an action through and wrapping it with `pure`, and why one counterexample monad and payload type disprove the universal result type. Use a fresh example to recheck those ideas in Days 5–6.
 
 ### Teaching notes for the next agent
 
 - Ask one prompt at a time. Start with a concrete value or worked example, then let the user try a fresh variation. Explicitly name whether you want a whole type, a returned value, a `runState` pair, or one field of a tuple. When confusion repeats, shrink the question to one operation or one field.
 - For laziness, begin from the final consumer. Have the user identify whether it asks for a tuple field, the list constructors, or the values inside those constructors. Then trace the dependency. A cycle in an element matters when that element is demanded. Give the intended input/output behavior before asking for another implementation.
-- Evidence is from chat. The user pasted a GHCi run where printing the whole pair from `spreadSum [4,-1,2] undefined` printed the sum and then raised `Prelude.undefined` in the list. Successful runs of the saved exercise checks and whether every chat answer was saved in a file remain unverified. The user explicitly ended the session, so no lightning round was run.
+- The user pasted a GHCi run where printing the whole pair from `spreadSum [4,-1,2] undefined` printed the sum and then raised `Prelude.undefined` in the list. On November 26, all nine supplied checks for the saved Days 1–3 implementations passed in GHCi. Use the chat evidence above for the reasoning prompts.
 
 ## Historical handoff · November 10, 2026
 
