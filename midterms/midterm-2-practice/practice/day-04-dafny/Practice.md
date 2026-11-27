@@ -53,3 +53,13 @@ Your implications and counterexamples …
 **4.4 Transfer.** Replace the suffix with `t := 2*t; t := t + 1;` and the postcondition with `t == 6*n + 1`. With the original invariant from 4.2, derive the new exit implication, showing both substitutions. Explain why the other two obligations stay the same.
 
 Your derivation …
+
+## Study notes and final review
+
+November 26, 2026. These notes refer to the [Extra Practice worksheet](ExtraPractice.pdf), which uses `CountUpByFour` for Q4.2–4.4.
+
+- **What went well.** You wrote both backward substitutions in Q4.1 and simplified them to `y >= 5` after checking the inequalities. For Q4.2 you correctly substituted the setup assignments into the invariant and worked out what the invariant requires after one loop iteration. You found valid counterexamples for both failed obligations in Q4.3 Candidate A, checking that each example made the assumptions true and the target false.
+- **What took practice.** In Q4.1, the direction of `3 < y` briefly got flipped. In Q4.2, you initially used just the guard as the preservation assumption and also tried requiring the guard after the body. Exit took the most guidance. You initially applied the suffix substitution to the invariant, then correctly applied it to `ensures`. The concrete `t = 12` to `t = 10` example helped distinguish the value at loop exit from the value at method return.
+- **What to review.** Name the program point on each side of the implication. For preservation, assume the invariant and true guard, then work backward from the invariant through the body. For exit, assume the invariant and false guard, then work backward from `ensures` through the suffix. For a failed implication, explicitly verify that the counterexample satisfies every assumption and falsifies the target.
+
+After covering all scheduled material and finishing Day 9 recall, try Extra Practice Q4.3 Candidate B and Q4.4 without notes. Those attempts are still open. Write all three obligations for Candidate B, then use Q4.4 to practice an exit check with two suffix assignments. Explain which value each occurrence of the updated variable refers to before simplifying.

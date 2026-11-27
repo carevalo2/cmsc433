@@ -16,7 +16,7 @@ ghci -imidterms/midterm-2-practice/support midterms/midterm-2-practice/practice/
 
 Use `:t` or evaluate the expression after predicting. After editing, use `:reload` and run the named `check...` expression for the function you attempted. Day 8 is an independent mixed set, so save your answers before checking them.
 
-For Day 4, type in the fillable PDF or edit the last pair of braces in each `\answer` command in the LaTeX source. The LaTeX header contains the rebuild commands. [Day 4 PDF](day-04-dafny/Practice.pdf) · [LaTeX](day-04-dafny/Practice.tex) · [Markdown](day-04-dafny/Practice.md)
+For Day 4, type in the fillable PDF or edit the last pair of braces in each `\answer` command in the LaTeX source. The LaTeX header contains the rebuild commands. [Day 4 PDF](day-04-dafny/Practice.pdf) · [LaTeX](day-04-dafny/Practice.tex) · [Extra practice PDF](day-04-dafny/ExtraPractice.pdf) · [Day 4 study notes](day-04-dafny/Practice.md#study-notes-and-final-review)
 
 ## Daily lessons
 
@@ -31,6 +31,8 @@ For Day 4, type in the fillable PDF or edit the last pair of braces in each `\an
 | **7 · Sun Nov 29** | [Short types and outputs](day-07-short-types/Practice.hs) | Practice most-general types, identify ill-typed expressions, compare applicative contexts, and implement a comprehension. | 0:55–17:30 |
 | **8 · Mon Nov 30** | [Mixed Haskell practice](day-08-mixed-practice/Practice.hs) and [Dafny practice](day-08-mixed-practice/Verification.md) | Attempt one set that combines all five sample question styles. Explain each answer and mark where you were unsure. | Revisit the relevant segment after attempting |
 | **9 · Tue Dec 1** | [Haskell recall](day-09-retention/Practice.hs) and [Dafny recall](day-09-retention/Verification.md) | Answer short type, trace, and implementation questions. Redo two prompts you needed help with. | Use only for a targeted refresher |
+
+After covering all scheduled topics and finishing Day 9 recall, return to [Day 4 verification practice](day-04-dafny/Practice.md#study-notes-and-final-review) for one independent pass through the loop obligations and a changed suffix.
 
 ## Lecture references
 
