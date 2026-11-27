@@ -1,13 +1,22 @@
 # CMSC433 Midterm 2 study handoff
 
-## Resume here · November 26, 2026
+## Resume here · November 27, 2026
 
-- **Active route.** [Nine-day practice sequence](practice/README.md). Days 1–3 were worked through in chat on November 24–25. On November 26, the user worked through Day 4 Extra Practice Q4.1, Q4.2, and Q4.3 Candidate A in chat, then chose to move on. The plan assumes a December 2 exam.
-- **Next lesson.** Start [Day 5, Q5.1](practice/day-05-types-to-code/Practice.hs#L11) with `gatherActions`. Use a concrete `Maybe` list to check the difference between an input action and the value it returns before building the recursive implementation.
+- **Active route.** Days 1–5 of the [nine-day practice sequence](practice/README.md) have been worked through in chat. Day 5 covered recursive collection, traversal, monadic composition, and the value `pure` requires. The plan assumes a December 2 exam.
+- **Next lesson.** Resume [Day 6, Q6.1](practice/day-06-monad-tracing/Practice.hs#L13). The user saw the successful example `sequence [Just 'p', Just 'q']` and paused before attempting Q6.1. Ask for the full result, its type, and what happens at the middle action. Then work through Day 6 one prompt at a time.
 - **Final review.** After covering all scheduled material and finishing Day 9 recall, return to [Day 4 verification practice](practice/day-04-dafny/Practice.md#study-notes-and-final-review). Extra Practice Q4.3 Candidate B and Q4.4 are available for an independent attempt. Prioritize deriving the exit implication and checking both sides of a counterexample.
+
+## Day 5 learning evidence
+
+- **Q5.1 · `gatherActions`.** Correctly identified the value bound from `Just 7` and wrote `pure []` and `pure (x : xs)` after the recursive bindings were scaffolded. Correctly predicted failure for a list with a middle `Nothing`. Initially gave concrete `Maybe Int` and `Int` when asked for the polymorphic types, and called the recursive result bound by `<-` `[Maybe a]`. After feedback, correctly typed a fresh binding from `Just [True, False]` as `[Bool]`. Recheck `m [a]` versus `[a]`, especially with nested `Maybe` in Day 6.
+- **Q5.2 · `walkActions`.** Correctly inferred `map f inputs :: [m b]`. Initially tried gathering `inputs` before `map`. After a type-based hint, wrote `gatherActions (map f inputs)`. Revisit the intermediate type when expressing collection with `mapM` in Q6.3.
+- **Q5.3 · `composeActions`.** Correctly bound the result of `f x`. Initially called `f` again on that result, then correctly called `g` but used the plain payload as the final `do` line. Reviewed ordinary `(.)` and why the final line needs an action. The assistant showed the direct `g res` form. The user then correctly predicted the full `Just True` result on a fresh input.
+- **Q5.4 · Polymorphic results.** Recognized that a counterexample could rule out a universal construction. Needed help choosing an empty payload type under `Identity` and explaining why `pure` needs a value of that type. Correctly answered `pure x` when given `x :: a`. Recheck which type is the monad and which is the payload.
+- **Saved work.** The three implementations are in [Day 5 Practice.hs](practice/day-05-types-to-code/Practice.hs). All six supplied checks passed in GHCi on November 27 (`checkGather`, `checkWalk`, and `checkCompose`). Q5.4 was discussed in chat and remains a reasoning prompt in the file.
 
 ## Day 4 worksheet and setup
 
+- The user worked through Extra Practice Q4.1, Q4.2, and Q4.3 Candidate A on November 26.
 - Use [Practice.tex](practice/day-04-dafny/Practice.tex) to edit answers and [Practice.pdf](practice/day-04-dafny/Practice.pdf) to follow the worksheet. Each `\answer` takes the student's text in its last pair of braces. An empty answer becomes a fillable PDF field. The [original Markdown prompts](practice/day-04-dafny/Practice.md) are also available.
 - Both Q4.1 substitutions are saved in the LaTeX. The rebuilt four-page PDF shows both answers and has 15 fillable fields for the remaining questions. In discussion, the whole-sequence condition simplified to `y >= -1`.
 - In the Windows VS Code workspace, Ctrl+S now rebuilds the PDF with the cached Tectonic recipe. The `.vscode/settings.json` recipe is local and Git-ignored. Manual rebuild commands are in the LaTeX header. Save a separate PDF copy for answers entered directly into PDF fields.
@@ -23,7 +32,7 @@
 
 ### Related Haskell review
 
-Before switching to the current checkout, we worked through the archived Part 03 material in chat. This covered `collectMaybe`, `walkM`, `composeM`, and the mock's `collectEither`, `mapM id`, and `Identity Empty` counterexample. The user needed guidance on the payload bound by `<-`, the difference between passing an action through and wrapping it with `pure`, and why one counterexample monad and payload type disprove the universal result type. Use a fresh example to recheck those ideas in Days 5–6.
+Before switching to the current checkout, we worked through the archived Part 03 material in chat. This covered `collectMaybe`, `walkM`, `composeM`, and the mock's `collectEither`, `mapM id`, and `Identity Empty` counterexample. The user needed guidance on the payload bound by `<-`, the difference between passing an action through and wrapping it with `pure`, and why one counterexample monad and payload type disprove the universal result type. The Day 5 notes above record the latest attempts.
 
 ### Teaching notes for the next agent
 

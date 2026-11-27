@@ -13,21 +13,28 @@ import StudyCheck (check, runChecks)
 -- value. What should the empty input return? Use recursion and do notation.
 -- Your types and base-case reason:
 gatherActions :: Monad m => [m a] -> m [a]
-gatherActions = undefined
+gatherActions [] = pure []
+gatherActions (first : rest) = do
+  x <- first
+  xs <- gatherActions rest
+  pure (x : xs)
 
 -- 5.2 IMPLEMENT: Write a traversal that applies the supplied action-producing
 -- function to each input. Reuse gatherActions and ordinary map. Explain the
 -- intermediate type and why both functions are needed.
 walkActions :: Monad m => (a -> m b) -> [a] -> m [b]
-walkActions = undefined
+walkActions f inputs = gatherActions (map f inputs)
 
 -- 5.3 IMPLEMENT: Use the result of f as the input to g. Write the function
 -- with bind or do notation. Why does ordinary (.) fail to connect f and g?
 composeActions :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
-composeActions = undefined
+composeActions f g x = do
+  res <- f x
+  g res
 
 -- 5.4 REASON: Given only the constraint Monad m, can you produce an action
 -- that returns a fully defined a for every a and m? What does pure require?
+-- Consider the signature makeValue :: Monad m => m a.
 -- Your reason and what changes if you are also given an a:
 
 checkCompose :: IO ()
